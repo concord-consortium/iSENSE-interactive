@@ -1,0 +1,13 @@
+.not-active {
+   pointer-events: none;
+   cursor: default;
+   color: darkgray;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+.extra-links {
+	float: right;
+}

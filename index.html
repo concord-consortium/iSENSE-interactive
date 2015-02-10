@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>iSENSE Integration</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+    </head>
+    <body>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+        <script src="js/main.js"></script>
+        <div class="extra-links">
+          <span style="visibility: hidden" >
+          <a id="open-visualization-link" class="not-active" href="#" target="_blank">Open Visualization in New Window</a>
+          |
+          </span>
+          <a id="open-isense-project" href="#" target="_blank">View Project in iSENSE</a>
+        </div>
+        <div id="enter-group-name">
+            <form onsubmit="updateGroupName(); document.getElementById('update-group-submit').focus(); return false;">
+                Group Name: <input id="group-name-field" type="text" size="50"></input>
+                <input id="update-group-submit" type="submit" value="Go"/>
+            </form>
+        </div>
+        <div id="data-set-form" class="hidden">
+           <form name="waterscience" onsubmit="createDataSet(); document.getElementById('create-data-set-submit').focus(); return false;">
+               label: <input id="datasetNameField" type="text"/>
+               pH: <input id="phField" type="text"/>
+               Turbidity: <input id="turbidityField" type="text"/>
+               <input id="create-data-set-submit" type="submit" value="Add Data"/>
+           </form>
+        </div>
+        <div id="visualization-iframe-container"></div>
+    </body>
+</html>
