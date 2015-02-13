@@ -1,4 +1,4 @@
-var server = "http://isenseproject.org/";
+var server = "http://isenseproject.org";
 var projectNum = "843";
 var groupFieldNumber = "4188";
 var groupName = "";
