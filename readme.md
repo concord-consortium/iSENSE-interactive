@@ -1,7 +1,6 @@
 This is a static html widget or interactive that makes it easy for students to use [iSENSE](http://isenseproject.org/) within the context of an activity.
 
-Currently this interactive is hard coded to point to a local install of iSENSE. And it is specific to certain
-project fields.
+Currently this interactive is hard coded to point to a specific project in iSENSE. The [live demo is here](http://concord-consortium.github.io/iSENSE-interactive/). The interactive tries to use your browsers location, so the browser will ask your permission to do so.
 
 Here is a [screencast](http://www.screencast.com/t/7jSfLv7J20y) of this interactive embedded in [ITSI](https://itsi.portal.concord.org).
 
@@ -12,7 +11,7 @@ The basic idea is that a class will be divided into groups.  Each student in a g
 ### Technical details
 
 - the interactive is iframe'd into the ITSI activity
-- the iSENSE visualization is iframe'd into the ITSI activity
+- the iSENSE visualization is iframe'd into the interactive.
 - the "Group Name" is a field in the iSENSE project.
 - the interactive loads all the datasets, and constructs the visualization URL with just the datasets with a matching group name.
 
