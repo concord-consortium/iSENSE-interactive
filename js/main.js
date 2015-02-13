@@ -1,6 +1,6 @@
-var server = "http://localhost:3000";
-var projectNum = "1";
-var groupFieldNumber = "3";
+var server = "http://isenseproject.org/";
+var projectNum = "843";
+var groupFieldNumber = "4188";
 var groupName = "";
 
 window.onload = function () {
@@ -61,19 +61,18 @@ function createDataSet() {
 	// Get the variables that the user entered in the HTML portion of the app.
 	// Data to be uploaded to iSENSE
 	var upload = {
-		'email': 'scytacki@concord.org',
-		'password': 'password',
-		'title': [],
+    'contribution_key' : "1234",
+    'contributor_name' : groupName,
+    'title': document.waterscience.datasetNameField.value + " " + [timestamp],
 		'data':
 	  	{
-			'1': [document.waterscience.phField.value],
-			'2': [document.waterscience.turbidityField.value],
+			'4186': [document.waterscience.phField.value],
+			'4187': [document.waterscience.turbidityField.value],
 
 	 	}
 	}
 
 	upload.data[groupFieldNumber] = [groupName];
-	upload.title = document.waterscience.datasetNameField.value + " " + [timestamp];
 
 	// Post to iSENSE
 	var xhr = new XMLHttpRequest();
