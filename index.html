@@ -13,8 +13,6 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="js/main.js"></script>
         <div class="extra-links">
-          <a id="open-visualization-link" class="not-active" href="#" target="_blank">Open Visualization in New Window</a>
-          |
           <a id="open-isense-project" href="#" target="_blank">View Project in iSENSE</a>
         </div>
         <div id="enter-group-name">
@@ -27,7 +25,8 @@
            <form name="waterscience" onsubmit="createDataSet(); document.getElementById('create-data-set-submit').focus(); return false;">
                label: <input id="datasetNameField" type="text"/>
                pH: <input id="phField" type="text"/>
-               Turbidity: <input id="turbidityField" type="text"/>
+               Turbidity: <input id="turbidityField" type="text"/></br>
+               latitude: <span id="latitude"></span> longitude: <span id="longitude"></span>
                <input id="create-data-set-submit" type="submit" value="Add Data"/>
            </form>
         </div>

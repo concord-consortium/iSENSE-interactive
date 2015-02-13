@@ -1,10 +1,37 @@
 var server = "http://isenseproject.org";
 var projectNum = "843";
 var groupFieldNumber = "4188";
+var phFieldNumber = "4186";
+var turbidityFieldNumber = "4187";
+var latitudeFieldNumber = "4189";
+var longitudeFieldNumber = "4190";
+
 var groupName = "";
+var position = {};
 
 window.onload = function () {
   document.getElementById("open-isense-project").href = server + "/projects/" + projectNum;
+  getLocation();
+}
+
+function getLocation() {
+  if (!navigator.geolocation){
+    return;
+  }
+
+  function success(geoPosition) {
+    position.latitude = geoPosition.coords.latitude;
+    position.longitude = geoPosition.coords.longitude;
+    document.getElementById("latitude").innerHTML = position.latitude;
+    document.getElementById("longitude").innerHTML = position.longitude;
+
+  };
+
+  function error() {
+    console.log("Unable to retrieve your location");
+  };
+
+  navigator.geolocation.getCurrentPosition(success, error);
 }
 
 function projectLoaded() {
@@ -32,9 +59,6 @@ function projectLoaded() {
   // inject an iframe with the following url
   // NOTE if there are no matching datasets then the iframe will show all of them
   var url = server + "/projects/" + projectNum + "/data_sets/" + dataSetList + "?embed=true";
-  var openLink = document.getElementById("open-visualization-link");
-  openLink.href = url;
-  openLink.className = "";
 
   document.getElementById("visualization-iframe-container").innerHTML =
     "<iframe src='" + url + "' width='100%' height='500'>";
@@ -60,19 +84,23 @@ function createDataSet() {
 
 	// Get the variables that the user entered in the HTML portion of the app.
 	// Data to be uploaded to iSENSE
+  var data = {};
+  data[groupFieldNumber] = [groupName];
+  data[phFieldNumber] = [document.waterscience.phField.value];
+  data[turbidityFieldNumber] = [document.waterscience.turbidityField.value];
+
+  // add position data if it exists
+  if (position.latitude && position.longitude){
+    data[latitudeFieldNumber] = [position.latitude];
+    data[longitudeFieldNumber] = [position.longitude];
+  }
+
 	var upload = {
     'contribution_key' : "1234",
     'contributor_name' : groupName,
     'title': document.waterscience.datasetNameField.value + " " + [timestamp],
-		'data':
-	  	{
-			'4186': [document.waterscience.phField.value],
-			'4187': [document.waterscience.turbidityField.value],
-
-	 	}
-	}
-
-	upload.data[groupFieldNumber] = [groupName];
+		'data': data
+	  };
 
 	// Post to iSENSE
 	var xhr = new XMLHttpRequest();
