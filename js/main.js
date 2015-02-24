@@ -6,6 +6,7 @@ var turbidityFieldNumber = "4187";
 var latitudeFieldNumber = "4189";
 var longitudeFieldNumber = "4190";
 
+var contributionKey = "1234";
 var groupName = "";
 var position = {};
 
@@ -61,7 +62,7 @@ function projectLoaded() {
   var url = server + "/projects/" + projectNum + "/data_sets/" + dataSetList + "?embed=true";
 
   document.getElementById("visualization-iframe-container").innerHTML =
-    "<iframe src='" + url + "' width='100%' height='500'>";
+    "<iframe src='" + url + "' width='100%' height='550'>";
 }
 
 function updateGroupName() {
@@ -96,7 +97,7 @@ function createDataSet() {
   }
 
 	var upload = {
-    'contribution_key' : "1234",
+    'contribution_key' : contributionKey,
     'contributor_name' : groupName,
     'title': document.waterscience.datasetNameField.value + " " + [timestamp],
 		'data': data
@@ -109,8 +110,45 @@ function createDataSet() {
 
     // send the collected data as JSON
     xhr.send(JSON.stringify(upload));
-    xhr.onloadend = function () {
+    xhr.onload = function () {
+      var datasetResult = JSON.parse(this.responseText);
       console.log("finished iSense post");
-      updateGroupName();
+      console.log(datasetResult);
+
+      // need to pull out the dataset id so we can possibly post the attached image
+      if(!uploadImage('file-select', server, datasetResult.id, contributionKey, groupName,
+          function(){
+            updateGroupName();
+          })){
+
+        // this refreshes the visualization below, it only happens if there wasn't an image to upload
+        updateGroupName();
+      }
     };
 }
+
+function doFileSelectClick() {
+  var el = document.getElementById("file-select");
+  if (el) {
+    el.click();
+  }
+}
+
+function handleFiles(files) {
+  var d = document.getElementById("attached-image");
+  if (!files.length) {
+    d.innerHTML = "<p>No files selected!</p>";
+  } else {
+    for (var i=0; i < files.length; i++) {
+      var img = document.createElement("img");
+      img.src = window.URL.createObjectURL(files[i]);;
+      img.height = 60;
+      img.onload = function() {
+        window.URL.revokeObjectURL(this.src);
+      }
+      d.appendChild(img);
+    }
+    document.getElementById("attach-image-link").style.display = 'none';
+  }
+}
+

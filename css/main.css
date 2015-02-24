@@ -11,3 +11,7 @@
 .extra-links {
 	float: right;
 }
+
+label {
+	white-space: nowrap;
+}
