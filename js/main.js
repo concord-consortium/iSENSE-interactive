@@ -79,7 +79,11 @@ function projectLoaded() {
   var dataFieldsDiv = $("#data-fields");
   dataFieldsDiv.html("");
   dataFields.forEach(function(field){
-    dataFieldsDiv.append("<label>" + field.name +
+    var unitString = "";
+    if(field.unit) {
+      unitString = " (" + field.unit + ")";
+    }
+    dataFieldsDiv.append("<label>" + field.name + unitString +
       " <input type='text' data-isense-field='" + field.id + "'/></label>\n");
   });
 
