@@ -11,23 +11,27 @@
     <body>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+        <script>
+          var server = "http://isenseproject.org";
+          // var projectNum = "843";
+          var contributionKey = "1234";
+        </script>
         <script src="js/media-upload.js"></script>
         <script src="js/main.js"></script>
         <div class="extra-links">
           <a id="open-isense-project" href="#" target="_blank">Full iSENSE Project</a>
         </div>
         <div id="enter-group-name">
-            <form onsubmit="updateGroupName(); document.getElementById('update-group-submit').focus(); return false;">
+            <form id="group-name-form">
+                Teacher Name: <input id="teacher-name-field" type="text" size="20"></input>
                 Group Name: <input id="group-name-field" type="text" size="20"></input>
                 <input id="update-group-submit" type="submit" value="Go"/>
             </form>
         </div>
-        <div id="data-set-form" class="hidden">
-           <form name="waterscience" onsubmit="createDataSet(); document.getElementById('create-data-set-submit').focus(); return false;">
+        <div id="data-set-form-div" class="hidden">
+           <form name="dataSetForm" id="data-set-form">
                <label>label: <input id="datasetNameField" type="text"/></label>
-               <label>pH: <input id="phField" type="text"/></label>
-               <label>Turbidity: <input id="turbidityField" type="text"/></label>
-               <br>
+               <div id="data-fields"></div>
                <label>latitude: <span id="latitude"></span></label>
                <label>longitude: <span id="longitude"></span></label>
                <input type="file" id="file-select" name="photo" accept="image/*" style="display:none" onchange="handleFiles(this.files)"/>
@@ -35,7 +39,7 @@
                <a id="attach-image-link" href="javascript:doFileSelectClick()">Attach an Image</a>
                <span id="attached-image">
                </span>
-               <input id="create-data-set-submit" type="submit" value="Add Data"/>
+               <input id="create-data-set-submit" type="submit" value="Submit Data"/>
            </form>
         </div>
         <div id="visualization-iframe-container"></div>

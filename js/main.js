@@ -1,18 +1,35 @@
-var server = "http://isenseproject.org";
-var projectNum = "843";
-var groupFieldNumber = "4188";
-var phFieldNumber = "4186";
-var turbidityFieldNumber = "4187";
-var latitudeFieldNumber = "4189";
-var longitudeFieldNumber = "4190";
-
-var contributionKey = "1234";
 var groupName = "";
+var teacherName = "";
 var position = {};
+var groupFieldNumber;
+var teacherFieldNumber;
+var latitudeFieldNumber;
+var longitudeFieldNumber;
+var dataFields;
 
 window.onload = function () {
+  // load projectNum from URL
+  if(location.hash){
+    projectNum = location.hash.slice(1);
+  } else {
+    // default project number
+    projectNum = "843";
+  }
+
   document.getElementById("open-isense-project").href = server + "/projects/" + projectNum;
   getLocation();
+
+  $('#data-set-form').submit(function (){
+    createDataSet();
+    $('#create-data-set-submit').focus();
+    return false;
+  });
+
+  $('#group-name-form').submit(function (){
+    updateGroupName();
+    $('#update-group-submit').focus();
+    return false;
+  });
 }
 
 function getLocation() {
@@ -23,9 +40,8 @@ function getLocation() {
   function success(geoPosition) {
     position.latitude = geoPosition.coords.latitude;
     position.longitude = geoPosition.coords.longitude;
-    document.getElementById("latitude").innerHTML = position.latitude;
-    document.getElementById("longitude").innerHTML = position.longitude;
-
+    $('#latitude').html(position.latitude);
+    $('#longitude').html(position.longitude);
   };
 
   function error() {
@@ -38,17 +54,46 @@ function getLocation() {
 function projectLoaded() {
   var project = JSON.parse(this.responseText);
   console.log(project);
+
+  dataFields = [];
+  project.fields.forEach(function(field){
+    if(field.name == "Group Name"){
+      groupFieldNumber = field.id;
+      return;
+    }
+    if(field.name == "Teacher Name"){
+      teacherFieldNumber = field.id;
+      return;
+    }
+    if(field.name == "Latitude"){
+      latitudeFieldNumber = field.id;
+      return;
+    }
+    if(field.name == "Longitude"){
+      longitudeFieldNumber = field.id;
+      return;
+    }
+    dataFields.push(field);
+  });
+
+  var dataFieldsDiv = $("#data-fields");
+  dataFieldsDiv.html("");
+  dataFields.forEach(function(field){
+    dataFieldsDiv.append("<label>" + field.name +
+      " <input type='text' data-isense-field='" + field.id + "'/></label>\n");
+  });
+
   // find all the datasets that start with group1
   var matchingDataSets = [];
   project.dataSets.forEach(function(dataSet){
-    if(dataSet.data[0][groupFieldNumber] == groupName){
+    var dataPoint = dataSet.data[0];
+    if(dataPoint[groupFieldNumber] == groupName && dataPoint[teacherFieldNumber] == teacherName){
       matchingDataSets.push(dataSet);
     }
   });
 
   if(matchingDataSets.length == 0){
-    document.getElementById("visualization-iframe-container").innerHTML = 
-      "There is no data for this group.";
+    $('#visualization-iframe-container').html("There is no data for this group.");
   	return;
   }
 
@@ -61,14 +106,16 @@ function projectLoaded() {
   // NOTE if there are no matching datasets then the iframe will show all of them
   var url = server + "/projects/" + projectNum + "/data_sets/" + dataSetList + "?embed=true";
 
-  document.getElementById("visualization-iframe-container").innerHTML =
-    "<iframe src='" + url + "' width='100%' height='550'>";
+  $('#visualization-iframe-container').html(
+    "<iframe src='" + url + "' width='100%' height='550'>"
+  );
 }
 
 function updateGroupName() {
-  document.getElementById("data-set-form").className = "";
+  $('#data-set-form-div').removeClass();
 
-  groupName = document.getElementById("group-name-field").value;
+  groupName = $('#group-name-field').val();
+  teacherName = $('#teacher-name-field').val();
   var oReq = new XMLHttpRequest();
   oReq.onload = projectLoaded;
   oReq.open("get", server + "/api/v1/projects/" + projectNum + "?recur=true", true);
@@ -87,8 +134,12 @@ function createDataSet() {
 	// Data to be uploaded to iSENSE
   var data = {};
   data[groupFieldNumber] = [groupName];
-  data[phFieldNumber] = [document.waterscience.phField.value];
-  data[turbidityFieldNumber] = [document.waterscience.turbidityField.value];
+  data[teacherFieldNumber] = [teacherName];
+
+  // need to iterate through all of the input fields
+  $('#data-set-form').find('input[data-isense-field]').each(function (){
+    data[$(this).data('isenseField')] = [this.value];
+  });
 
   // add position data if it exists
   if (position.latitude && position.longitude){
@@ -99,7 +150,7 @@ function createDataSet() {
 	var upload = {
     'contribution_key' : contributionKey,
     'contributor_name' : groupName,
-    'title': document.waterscience.datasetNameField.value + " " + [timestamp],
+    'title': document.dataSetForm.datasetNameField.value + " " + [timestamp],
 		'data': data
 	  };
 
@@ -128,10 +179,7 @@ function createDataSet() {
 }
 
 function doFileSelectClick() {
-  var el = document.getElementById("file-select");
-  if (el) {
-    el.click();
-  }
+  $('#file-select').click();
 }
 
 function handleFiles(files) {
@@ -148,7 +196,7 @@ function handleFiles(files) {
       }
       d.appendChild(img);
     }
-    document.getElementById("attach-image-link").style.display = 'none';
+    $('#attach-image-link').hide();
   }
 }
 
