@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="">
     <head>
         <meta charset="utf-8">
@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" href="css/main.css">
     </head>
     <body>
+      <div id="page-wrapper">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script>
@@ -18,30 +19,95 @@
         </script>
         <script src="js/media-upload.js"></script>
         <script src="js/main.js"></script>
-        <div class="extra-links">
-          <a id="open-isense-project" href="#" target="_blank">Full iSENSE Project</a>
-        </div>
         <div id="enter-group-name">
             <form id="group-name-form">
-                Teacher Name: <input id="teacher-name-field" type="text" size="20"></input>
-                Group Name: <input id="group-name-field" type="text" size="20"></input>
-                <input id="update-group-submit" type="submit" value="Go"/>
+              <dl>
+                <dt><label for="teacher-name-field">Your teacher's name:</label></dt> 
+                <dd><input id="teacher-name-field" type="text" size="20"/></dd>
+                <dt><label for="group-name-field">Your group's name:</label></dt>
+                <dd><input id="group-name-field" type="text" size="20"/></dd>
+                <dt><label for="group-state-field">Your state:</label></dt>
+                <dd><select id="group-state-field">
+                      <option value="AL">Alabama</option>
+                      <option value="AK">Alaska</option>
+                      <option value="AZ">Arizona</option>
+                      <option value="AR">Arkansas</option>
+                      <option value="CA">California</option>
+                      <option value="CO">Colorado</option>
+                      <option value="CT">Connecticut</option>
+                      <option value="DE">Delaware</option>
+                      <option value="DC">District Of Columbia</option>
+                      <option value="FL">Florida</option>
+                      <option value="GA">Georgia</option>
+                      <option value="HI">Hawaii</option>
+                      <option value="ID">Idaho</option>
+                      <option value="IL">Illinois</option>
+                      <option value="IN">Indiana</option>
+                      <option value="IA">Iowa</option>
+                      <option value="KS">Kansas</option>
+                      <option value="KY">Kentucky</option>
+                      <option value="LA">Louisiana</option>
+                      <option value="ME">Maine</option>
+                      <option value="MD">Maryland</option>
+                      <option value="MA">Massachusetts</option>
+                      <option value="MI">Michigan</option>
+                      <option value="MN">Minnesota</option>
+                      <option value="MS">Mississippi</option>
+                      <option value="MO">Missouri</option>
+                      <option value="MT">Montana</option>
+                      <option value="NE">Nebraska</option>
+                      <option value="NV">Nevada</option>
+                      <option value="NH">New Hampshire</option>
+                      <option value="NJ">New Jersey</option>
+                      <option value="NM">New Mexico</option>
+                      <option value="NY">New York</option>
+                      <option value="NC">North Carolina</option>
+                      <option value="ND">North Dakota</option>
+                      <option value="OH">Ohio</option>
+                      <option value="OK">Oklahoma</option>
+                      <option value="OR">Oregon</option>
+                      <option value="PA">Pennsylvania</option>
+                      <option value="RI">Rhode Island</option>
+                      <option value="SC">South Carolina</option>
+                      <option value="SD">South Dakota</option>
+                      <option value="TN">Tennessee</option>
+                      <option value="TX">Texas</option>
+                      <option value="UT">Utah</option>
+                      <option value="VT">Vermont</option>
+                      <option value="VA">Virginia</option>
+                      <option value="WA">Washington</option>
+                      <option value="WV">West Virginia</option>
+                      <option value="WI">Wisconsin</option>
+                      <option value="WY">Wyoming</option>
+                  </select></dd>
+              </dl>
+              <input id="update-group-submit" type="submit" value="Go"/>
             </form>
+            <div id="group-name-info"></div>
         </div>
         <div id="data-set-form-div" class="hidden">
            <form name="dataSetForm" id="data-set-form">
-               <label>label: <input id="datasetNameField" type="text"/></label>
-               <div id="data-fields"></div>
-               <label>latitude: <span id="latitude"></span></label>
-               <label>longitude: <span id="longitude"></span></label>
-               <input type="file" id="file-select" name="photo" accept="image/*" style="display:none" onchange="handleFiles(this.files)"/>
+             <dl>
+               <dt><label for="datasetNameField">Description of your test site:</label></dt>
+               <dd><input id="datasetNameField" type="text"/></dd>
+               <dd><div id="data-fields"></div></dd>
+               <dd><label for="latitude">Your latitude: <span id="latitude"></span></label></dd> 
+               <dd><label for="longitude">Your longitude: <span id="longitude"></span></label></dd>
+               <dt>Image:</dt>
+               <dd><input type="file" id="file-select" name="photo" accept="image/*" style="display:none" onchange="handleFiles(this.files)"/>
                <br>
-               <a id="attach-image-link" href="javascript:doFileSelectClick()">Attach an Image</a>
+               <a id="attach-image-link" href="javascript:doFileSelectClick()">Attach an image</a>
                <span id="attached-image">
-               </span>
-               <input id="create-data-set-submit" type="submit" value="Submit Data"/>
+               </span></dd>
+             </dl>
+             <input id="create-data-set-submit" type="submit" value="Submit Data"/>
            </form>
+           <div id="data-set-info"></div>
         </div>
         <div id="visualization-iframe-container"></div>
+        <div class="extra-links">
+          <a id="open-isense-project" href="#" target="_blank">Full iSENSE Project</a>
+        </div>
+      </div><!-- /#page-wrapper -->
     </body>
 </html>

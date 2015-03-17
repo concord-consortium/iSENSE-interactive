@@ -20,16 +20,27 @@ window.onload = function () {
   getLocation();
 
   $('#data-set-form').submit(function (){
+
+    var data_set_info = '<h2>Data Collection</h2><p>Test site: <span class="value">' + $('#datasetNameField').val() + '</span>, Latitude: <span class="value">' + $('#latitude').text() + '</span>, Longitude: <span class="value">' + $('#longitude').text() + '</span>, more...</p><a class="edit-link" href="#" onclick="showDataSetForm(); return false;">add a point</a>';
+    $('#data-set-form').fadeOut();
+    $('#data-set-info').html(data_set_info).fadeIn();
+
     createDataSet();
     $('#create-data-set-submit').focus();
     return false;
   });
 
   $('#group-name-form').submit(function (){
+
+    var group_name_info = '<h2>Group</h2><p>Teacher: <span class="value">' + $('#teacher-name-field').val() + '</span>, Group: <span class="value">' + $('#group-name-field').val() + '</span>, State: <span class="value">' + $('#group-state-field').val() + '</span></p><a class="edit-link" href="#" onclick="showGroupNameForm(); return false;">edit</a>';
+    $('#group-name-form').fadeOut();
+    $('#group-name-info').html(group_name_info).fadeIn();
+
     updateGroupName();
     $('#update-group-submit').focus();
     return false;
   });
+
 }
 
 function getLocation() {
@@ -83,8 +94,8 @@ function projectLoaded() {
     if(field.unit) {
       unitString = " (" + field.unit + ")";
     }
-    dataFieldsDiv.append("<label>" + field.name + unitString +
-      " <input type='text' data-isense-field='" + field.id + "'/></label>\n");
+    dataFieldsDiv.append('<dt><label for="' + field.id + '">' + field.name + unitString +
+      '</label></dt><dd><input type="text" data-isense-field="' + field.id + '"/></dd>' + "\n");
   });
 
   // find all the datasets that start with group1
@@ -111,7 +122,7 @@ function projectLoaded() {
   var url = server + "/projects/" + projectNum + "/data_sets/" + dataSetList + "?embed=true";
 
   $('#visualization-iframe-container').html(
-    "<iframe src='" + url + "' width='100%' height='550'>"
+    "<iframe id='visualization' src='" + url + "' width='100%' height='550' allowfullscreen='true'></iframe><div id='fullsize-link' title='Toggle full-screen' onclick='requestFullScreen(\"visualization\");'></div>"
   );
 }
 
@@ -204,3 +215,32 @@ function handleFiles(files) {
   }
 }
 
+function showGroupNameForm() {
+  $('#group-name-form').fadeIn('slow');
+  $('#group-name-info').fadeOut('slow');
+}
+
+function showDataSetForm() {
+  $('#data-set-form').fadeIn('slow');
+  $('#data-set-info').fadeOut('slow');
+}
+
+function requestFullScreen(item_id) {
+
+  var el = document.getElementById(item_id);
+
+  // Supports most browsers and their versions.
+  var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen 
+  || el.mozRequestFullScreen || el.msRequestFullScreen;
+
+  if (requestMethod) {
+    // Native full screen.
+    requestMethod.call(el);
+  } else if (typeof window.ActiveXObject !== "undefined") {
+    // Older IE.
+    var wscript = new ActiveXObject("WScript.Shell");
+    if (wscript !== null) {
+      wscript.SendKeys("{F11}");
+    }
+  }
+}
