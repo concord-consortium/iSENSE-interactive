@@ -1,8 +1,10 @@
 var groupName = "";
 var teacherName = "";
+var usState = "";
 var position = {};
 var groupFieldNumber;
 var teacherFieldNumber;
+var stateFieldNumber;
 var latitudeFieldNumber;
 var longitudeFieldNumber;
 var dataFields;
@@ -32,7 +34,7 @@ window.onload = function () {
 
   $('#group-name-form').submit(function (){
 
-    var group_name_info = '<h2>Group</h2><p>Teacher: <span class="value">' + $('#teacher-name-field').val() + '</span>, Group: <span class="value">' + $('#group-name-field').val() + '</span>, State: <span class="value">' + $('#group-state-field').val() + '</span></p><a class="edit-link" href="#" onclick="showGroupNameForm(); return false;">edit</a>';
+    var group_name_info = '<h2>Group</h2><p>Teacher: <span class="value">' + $('#teacher-name-field').val() + '</span>, Group: <span class="value">' + $('#group-name-field').val() + '</span>, State: <span class="value">' + $('#us-state-field').val() + '</span></p><a class="edit-link" href="#" onclick="showGroupNameForm(); return false;">edit</a>';
     $('#group-name-form').fadeOut();
     $('#group-name-info').html(group_name_info).fadeIn();
 
@@ -74,6 +76,10 @@ function projectLoaded() {
     }
     if(field.name == "Teacher Name"){
       teacherFieldNumber = field.id;
+      return;
+    }
+    if(field.name == "State"){
+      stateFieldNumber = field.id;
       return;
     }
     if(field.name == "Latitude"){
@@ -131,6 +137,7 @@ function updateGroupName() {
 
   groupName = $('#group-name-field').val();
   teacherName = $('#teacher-name-field').val();
+  usStateName = $('#us-state-field').val();
   var oReq = new XMLHttpRequest();
   oReq.onload = projectLoaded;
   oReq.open("get", server + "/api/v1/projects/" + projectNum + "?recur=true", true);
@@ -150,6 +157,9 @@ function createDataSet() {
   var data = {};
   data[groupFieldNumber] = [groupName];
   data[teacherFieldNumber] = [teacherName];
+  if (stateFieldNumber) {
+    data[stateFieldNumber] = [usStateName];
+  }
 
   // need to iterate through all of the input fields
   $('#data-set-form').find('input[data-isense-field]').each(function (){
