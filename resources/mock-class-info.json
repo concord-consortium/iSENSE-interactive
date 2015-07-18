@@ -1,0 +1,13 @@
+{
+	"uri": "https://itsi.portal.concord.org/classes/1",
+	"name": "Period 1",
+	"state": "MA",
+	"teachers": [
+	   {
+	   	  "id": "https://itsi.portal.concord.org/users/1",
+	   	  "first_name": "Scott",
+	   	  "last_name": "Cytacki"
+	   	}
+	],
+	"computed label_needs to be less than 40 chars": "ma-cytacki-period1"
+}

@@ -74,7 +74,7 @@ label {
   padding-bottom: 3em;
   position: relative;
   }
-#group-name-info, #data-set-info {
+#team-name-info, #data-set-info, #class-info, #project-info {
   background: #eee;
   border-radius: 3px;
   color: #555;
@@ -82,13 +82,13 @@ label {
   padding: .75em;
   position: relative;
   }
-#group-name-info h2, #data-set-info h2 {
+#team-name-info h2, #data-set-info h2, #class-info h2, #project-info h2 {
   color: #666;
   font-weight: bold;
   margin-bottom: .25em;
   text-transform: uppercase;
   }
-#group-name-info span.value, #data-set-info span.value {
+#team-name-info span.value, #data-set-info span.value, #class-info span.value {
   color: #777;
   }
 #fullsize-link {
