@@ -48,3 +48,15 @@ ClassPeriod.prototype.isenseLabel = function() {
   label = this.state + '-' + teacherLastName + '-' + className;
   return label.toLowerCase();
 }
+
+ClassPeriod.prototype.contributorKey = function() {
+  var key = this.uri;
+
+  // need to shorten the key it can only be 40 chars
+  // strip off http[s]://
+  // strip 'concord.org'
+  key = key.replace('.concord.org', '');
+  key = key.replace('http://', '');
+  key = key.replace('https://', '');
+  return key;
+}

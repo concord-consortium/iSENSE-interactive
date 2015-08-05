@@ -16,12 +16,13 @@ var ProjectInfo = React.createClass({
   },
 
   render: function() {
-	if (this.state.changing){
-	  return (<ProjectChooser projects={this.props.projects} onProjectChoosen={this.onProjectChoosen}/>);
-	} else {
+  	if (this.state.changing){
+	    return (<ProjectChooser projects={this.props.projects} onProjectChoosen={this.onProjectChoosen}/>);
+	  } else {
       return (
         <div>Project: {this.props.project.name}
              <a href="change_project" onClick={this.changeProjectRequest}>change</a>
+             <a href={this.props.project.isenseProjectLink} target="_blank">full iSENSE project</a>
         </div>
       );
     }
