@@ -22,7 +22,7 @@
   "author": "Scott Cytacki",
   "browserify": {
     "transform": [
-      "babelify",
+      ["babelify", {"sourceMapRelative": "/Users/scytacki/Development/iSENSE-interactive"}],
       "envify"
     ]
   }
