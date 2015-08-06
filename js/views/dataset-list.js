@@ -1,3 +1,5 @@
+var React = require('react');
+
 var DatasetList = React.createClass({
   render: function() {
   	// need to go through the passed in datasets array
@@ -32,3 +34,5 @@ var DatasetListItem = React.createClass({
   		);
   }
 });
+
+module.exports = DatasetList;

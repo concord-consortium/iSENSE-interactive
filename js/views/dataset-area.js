@@ -1,3 +1,7 @@
+var React = require('react');
+var DatasetList = require('./dataset-list')
+var ProjectDataEntry = require('./project-data-entry');
+
 var DatasetArea = React.createClass({
   getInitialState: function() {
     return { mode: "addingData" };
@@ -44,3 +48,5 @@ var DatasetArea = React.createClass({
       );
   }
 });
+
+module.exports = DatasetArea;

@@ -103,3 +103,5 @@ Project.prototype.uploadData = function(uploadInfo, callback) {
     };
 
 };
+
+module.exports = Project;

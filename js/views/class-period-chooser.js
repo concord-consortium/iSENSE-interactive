@@ -1,3 +1,6 @@
+var React = require('react');
+var ClassPeriodAddForm = require('./class-period-add-form');
+
 var ClassPeriodChooser = React.createClass({
   getInitialState: function() {
     return {
@@ -79,4 +82,6 @@ var ClassPeriodChooserItem = React.createClass({
     );
   }
 });
+
+module.exports = ClassPeriodChooser;
 

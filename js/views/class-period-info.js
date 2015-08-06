@@ -1,3 +1,7 @@
+var React = require('react');
+var ClassPeriodChooser = require('./class-period-chooser');
+var ClassPeriodView = require('./class-period-view');
+
 var ClassPeriodInfo = React.createClass({
   getInitialState: function() {
   	return {
@@ -30,13 +34,4 @@ var ClassPeriodInfo = React.createClass({
   }
 });
 
-var ClassPeriodView = React.createClass({
-  render: function() {
-      return (
-        <span>Class: {this.props.classPeriod.name},
-              Teacher: {this.props.classPeriod.teacherName},
-              State: {this.props.classPeriod.state}
-        </span>
-      );
-    }
-});
+module.exports = ClassPeriodInfo;

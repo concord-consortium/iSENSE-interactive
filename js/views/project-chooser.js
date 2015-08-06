@@ -1,3 +1,5 @@
+var React = require('react');
+
 var ProjectChooser = React.createClass({
   render: function() {
 	  // need a list of projects to choose from
@@ -37,3 +39,5 @@ var ProjectChooserItem = React.createClass({
     );
   }
 });
+
+module.exports = ProjectChooser;

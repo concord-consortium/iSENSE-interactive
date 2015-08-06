@@ -60,3 +60,5 @@ ClassPeriod.prototype.contributorKey = function() {
   key = key.replace('https://', '');
   return key;
 }
+
+module.exports = ClassPeriod;

@@ -1,3 +1,12 @@
+var React = require('react');
+var ClassPeriodInfo = require('./class-period-info');
+var ClassPeriod = require('../models/class-period');
+var ProjectInfo = require('./project-info');
+var Project = require('../models/project');
+var TeamInfo = require('./team-info');
+var DatasetArea = require('./dataset-area');
+var Dataset = require('../models/dataset');
+
 var App = React.createClass({
   getInitialState: function() {
 
@@ -122,3 +131,5 @@ var App = React.createClass({
     // and change the team information
   }
 });
+
+module.exports = App;

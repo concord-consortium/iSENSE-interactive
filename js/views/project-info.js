@@ -1,3 +1,6 @@
+var React = require('react');
+var ProjectChooser = require('./project-chooser');
+
 var ProjectInfo = React.createClass({
   getInitialState: function() {
   	return {
@@ -28,3 +31,5 @@ var ProjectInfo = React.createClass({
     }
   }
 });
+
+module.exports = ProjectInfo;

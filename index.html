@@ -2,33 +2,10 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello React!</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
-    <script src="js/models/class-period.js"></script>
-    <script src="js/models/project.js"></script>
-    <script src="js/models/dataset.js"></script>
-    <script type="text/jsx" src="js/views/class-period-info.js"></script>
-    <script type="text/jsx" src="js/views/class-period-chooser.js"></script>
-    <script type="text/jsx" src="js/views/class-period-add-form.js"></script>
-    <script type="text/jsx" src="js/views/project-chooser.js"></script>
-    <script type="text/jsx" src="js/views/project-info.js"></script>
-    <script type="text/jsx" src="js/views/project-data-entry.js"></script>
-    <script type="text/jsx" src="js/views/dataset-area.js"></script>
-    <script type="text/jsx" src="js/views/dataset-list.js"></script>
-    <script type="text/jsx" src="js/views/team-info.js"></script>
-    <script type="text/jsx" src="js/views/app.js"></script>
+    <title>iSENSE Interactive</title>
   </head>
   <body>
     <div id="example"></div>
-    <script type="text/jsx">
-      var WS;
-
-      // use of the ref with a call back is a hack to keep things simple
-      React.render(
-        <App ref={function(component){ WS = component}}/>,
-        document.getElementById('example')
-      );
-    </script>
+    <script src="js/bundle.js"></script>
   </body>
 </html>

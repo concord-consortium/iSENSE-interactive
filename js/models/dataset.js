@@ -74,17 +74,19 @@ Dataset.prototype.submit = function(callback) {
     // and change the team information
   };
 
-  Dataset.prototype.dataForHumans = function(){
-    var forHumans = {},
-        field;
+Dataset.prototype.dataForHumans = function(){
+  var forHumans = {},
+      field;
 
-    for (var key in this.data) {
-      if (this.data.hasOwnProperty(key)) {
-        // need to look up the field name
-        field = this.project.getField(key);
-        dataSet[key] = [this.data[key]]
-      }
+  for (var key in this.data) {
+    if (this.data.hasOwnProperty(key)) {
+      // need to look up the field name
+      field = this.project.getField(key);
+      dataSet[key] = [this.data[key]]
     }
+  }
 
 
-  };
+};
+
+module.exports = Dataset;

@@ -1,3 +1,5 @@
+var React = require('react');
+
 var TeamInfo = React.createClass({
   getInitialState: function() {
   	return {
@@ -42,3 +44,5 @@ var TeamInfo = React.createClass({
     }
   }
 });
+
+module.exports = TeamInfo;

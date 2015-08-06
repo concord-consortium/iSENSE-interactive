@@ -1,3 +1,6 @@
+var React = require('react');
+var ClassPeriodView = require('./class-period-view');
+
 var ClassPeriodAddForm = React.createClass({
   getInitialState: function() {
   	return {
@@ -67,3 +70,5 @@ var ClassPeriodAddForm = React.createClass({
     }
   }
 });
+
+module.exports = ClassPeriodAddForm;

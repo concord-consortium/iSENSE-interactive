@@ -1,3 +1,5 @@
+var React = require('react');
+
 var ProjectDataEntry = React.createClass({
   getInitialState: function() {
   	return {
@@ -70,3 +72,5 @@ var ProjectFormField = React.createClass({
     );
   }
 });
+
+module.exports = ProjectDataEntry;
