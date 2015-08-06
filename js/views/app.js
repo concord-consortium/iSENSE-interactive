@@ -6,7 +6,8 @@ var App = React.createClass({
     return {
       classPeriod: this.mockClassPeriods[0],
       project: this.mockProjects[0],
-      team: {name: "My Team"}
+      team: {name: "My Team"},
+      datasets: []
   	};
   },
 
@@ -80,50 +81,44 @@ var App = React.createClass({
           project={this.state.project}
           projects={this.mockProjects}
           onChange={this.projectChangeHandler}/>
+        {
+          // We might also want to keep a list of teams to make it easier for teams to
+          // see the teams that they have used before
+          // but this is something that seems not critical for the first version
+        }
         <TeamInfo
           team={this.state.team}
           onChange={this.teamChangeHandler}/>
-        <ProjectDataEntry project={this.state.project}/>
+        <DatasetArea
+          project={this.state.project}
+          datasets={this.state.datasets}
+          classPeriod={this.state.classPeriod}/>
       </div>
     );
   },
 
   submitData: function(data) {
-    // this.state.project will do the actual submission
-    // this.state.classPeriod contains data for the built in fields in the project
-    // data contains the data for the fields defined in the project
-    // this requires the contributor key to have been created in iSENSE first
-    // Get the variables that the user entered in the HTML portion of the app.
-    // Data to be uploaded to iSENSE
-    var dataSet = {},
-        fieldIDs = this.state.project.fieldIDs;
+    var dataset = new Dataset(this.state.project,
+           this.state.classPeriod, this.state.team, data),
+        newDatasets = [];
 
-    // TODO store the team name as teamName - className to make filtering easier for teachers
-    dataSet[fieldIDs.teamName] = [this.state.team.name];
-    dataSet[fieldIDs.className] = [this.state.classPeriod.name];
-    dataSet[fieldIDs.teacherName] = [this.state.classPeriod.teacherName];
-    dataSet[fieldIDs.state] = [this.state.classPeriod.state];
+    dataset.submit(function (uploadedDataset, result){
+      // there should be a better way to do this so we only update the dataset that changed
+      this.forceUpdate();
+    }.bind(this));
 
-    // add position data if it exists
-    // if (position.latitude && position.longitude){
-    //   data[latitudeFieldNumber] = [position.latitude];
-    //   data[longitudeFieldNumber] = [position.longitude];
-    // }
-
-    // add all input field values to the data set
-    for (var key in data) {
-      if (data.hasOwnProperty(key)) {
-        dataSet[key] = [data[key]]
-      }
-    }
-
-    this.state.project.uploadData({
-      contributionKey : this.state.classPeriod.contributorKey(),
-      contributorName : this.state.team.name,
-      data            : dataSet
-    });
+    // keep track of these datasets so we can display them
+    newDatasets = this.state.datasets.slice(0);
+    newDatasets.push(dataset);
+    this.setState({datasets: newDatasets});
 
     // probably need to change some state to indicate that we are uploading
     // the dataset
+    // also want to display a list of datasets associated with this project and team. We might
+    // want to show all datasets for this project across all teams.  This will make it easier if
+    // a device is used by mulitple teams out in the field.
+    // my current approach is to use a tabbed navigation for this: "Add Dataset", "Dataset List"
+    // if the datasets are not team specific then the "Add Dataset" could be the place to show and
+    // and change the team information
   }
 });

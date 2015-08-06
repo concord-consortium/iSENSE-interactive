@@ -5,7 +5,12 @@ var Project = function(data){
   this.name = data.name;
   this.server = "http://isenseproject.org";
   this.isenseProjectLink = this.server + "/projects/" + this.id;
+  // this should be serialized
+  this.isenseProject = {};
+  // this could be serialized but it is not required
   this.dataFields = [];
+  // this should be serialized
+  this.submittedDatasets = [];
   this.loading = false;
 };
 
@@ -61,7 +66,7 @@ Project.prototype.parseFields = function(){
   }.bind(this));
 };
 
-Project.prototype.uploadData = function(uploadInfo) {
+Project.prototype.uploadData = function(uploadInfo, callback) {
  // uploadData({
  //      contributionKey : this.state.classPeriod.isenseLabel(),
  //      contributorName : this.state.team.name,
@@ -92,17 +97,9 @@ Project.prototype.uploadData = function(uploadInfo) {
       console.log("finished iSense post");
       console.log(datasetResult);
 
-      // need to pull out the dataset id so we can possibly post the attached image
-      // var uploadingImage =
-      //   uploadImage('file-select', server, datasetResult.id, contributionKey, combinedTeamName(),
-      //               function(){
-      //                  updateVisualization();
-      //               })
-
-      // if(!uploadingImage){
-      //   updateVisualization();
-      // }
-      // need to fire the callback to update the state
+	  if (typeof callback !== 'undefined'){
+	    callback(datasetResult);
+	  }
     };
 
 };
