@@ -1,23 +1,27 @@
 var React = require('react');
 
+var Nav = require('react-bootstrap/lib/nav');
+var NavItem = require('react-bootstrap/lib/navitem');
+
 var ProjectChooser = React.createClass({
+  handleSelect: function(project){
+    // do something here
+    this.props.onProjectChoosen(project);
+  },
+
   render: function() {
-	  // need a list of projects to choose from
-	  var projectList = [];
-	  this.props.projects.forEach(function(project){
-	  	projectList.push(
-        <li>
-          <ProjectChooserItem project={project} onSelect={this.props.onProjectChoosen}/>
-        </li>);
-	  }.bind(this));
+	  var projectList = this.props.projects.map(function(project){
+	  	return(
+        <NavItem eventKey={project}>{project.name}</NavItem>
+      )
+	  });
 
 	  return (
-	  	<div>
-		  	<h2>Choose a Project</h2>
-		  	<ul>
-		  	  {projectList}
-		  	</ul>
-		  </div>
+      <div>
+	  	  <Nav stacked bsStyle='pills' activeKey={this.props.currentProject} onSelect={this.handleSelect}>
+          {projectList}
+        </Nav>
+      </div>
 	  );
   }
 });

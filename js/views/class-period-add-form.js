@@ -1,9 +1,14 @@
 var React = require('react');
+var Button = require('react-bootstrap/lib/Button');
+var Input = require('react-bootstrap/lib/input');
+
 var ClassPeriodView = require('./class-period-view');
+var ClassPeriod = require('../models/class-period');
 
 var ClassPeriodAddForm = React.createClass({
   getInitialState: function() {
   	return {
+      classword: "",
       foundClassPeriod: null
     };
   },
@@ -36,38 +41,56 @@ var ClassPeriodAddForm = React.createClass({
   	this.setState({foundClassPeriod: null});
   },
 
-  cancelSelectClassHandler: function (e) {
-  	e.preventDefault();
-  	this.setState({foundClassPeriod: null});
-  	this.props.onClassPeriodChoosen(null);
+  handleChange: function(event) {
+    this.setState({classword: event.target.value});
   },
 
   render: function() {
-  	if (this.state.foundClassPeriod === null) {
-	    return (
-		  	<form>
-		  	  <input
-		  	    type="text"
-		  	    placeholder="enter class word"
-		  	    ref="classwordInput"
-		  	  />
-		  	  <input
-		  	    type="submit"
-		  	    value="Find Class"
-		  	    onClick={this.findClassHandler}
-		  	    />
-		  	</form>
-	    );
-    } else {
-    	return (
-    		<div>
-    		  <p>Is the class you were looking for?</p>
-    		  <ClassPeriodView classPeriod={this.state.foundClassPeriod}/>
-    		  <input type="submit" value="Select Class" onClick={this.selectClassHandler}/>
-    		  <input type="submit" value="Cancel" onClick={this.cancelSelectClassHandler}/>
-    		</div>
-    		);
+    var foundClassPeriodConfirmation = false;
+
+    if (this.state.foundClassPeriod !== null) {
+      foundClassPeriodConfirmation =
+        <div>
+          <ClassPeriodView classPeriod={this.state.foundClassPeriod}/>
+          <Button onClick={this.selectClassHandler}>Select Class</Button>
+        </div>
     }
+
+    var foundClassPeriodSummary = "";
+    if(this.state.foundClassPeriod !== null) {
+      foundClassPeriodSummary = this.state.foundClassPeriod.summaryText();
+    }
+
+    var findClassButton = <Button type="submit" onClick={this.findClassHandler}>Find</Button>;
+    var selectClassButton =
+      <Button
+          disabled={this.state.foundClassPeriod === null}
+          onClick={this.selectClassHandler}>
+        Select</Button>;
+
+
+    return (
+      <div>
+  	  	<form>
+          <Input
+            type="text"
+            label="Find New Class"
+  	  	    placeholder="enter class word"
+            value={this.state.classword}
+            buttonAfter={findClassButton}
+            onChange={this.handleChange}
+  	  	  />
+  	  	</form>
+        <Input
+          type="text"
+          placeholder="result"
+          value={foundClassPeriodSummary}
+          buttonAfter={selectClassButton}
+          readOnly
+          disabled={this.state.foundClassPeriod === null}
+          />
+      </div>
+    );
   }
 });
 

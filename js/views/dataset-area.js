@@ -1,51 +1,24 @@
 var React = require('react');
+var TabbedArea = require('react-bootstrap/lib/tabbedarea');
+var TabPane = require('react-bootstrap/lib/tabpane');
 var DatasetList = require('./dataset-list')
 var ProjectDataEntry = require('./project-data-entry');
 
 var DatasetArea = React.createClass({
-  getInitialState: function() {
-    return { mode: "addingData" };
-  },
-
-  handleAddData: function(e) {
-    e.preventDefault();
-    this.setState({mode: "addingData"});
-  },
-
-  handleViewData: function(e) {
-    e.preventDefault();
-    this.setState({mode: "viewingData"});
-  },
-
   render: function() {
-    var content;
-
-    switch(this.state.mode) {
-      case "addingData":
-        content = (
+    return (
+      <TabbedArea defaultActiveKey={1}>
+        <TabPane eventKey={1} tab='Add Dataset'>
           <ProjectDataEntry project={this.props.project}/>
-        );
-        break;
-      case "viewingData":
-        content = (
+        </TabPane>
+        <TabPane eventKey={2} tab='List Datasets'>
           <DatasetList
             project={this.props.project}
             datasets={this.props.datasets}
             classPeriod={this.props.classPeriod}/>
-        );
-        break;
-    }
-
-    return (
-      <div>
-        <div>
-          <a href="add_data" onClick={this.handleAddData}>Add Dataset</a>
-          {" "}
-          <a href="view_data" onClick={this.handleViewData}>List Datasets</a>
-        </div>
-        {content}
-      </div>
-      );
+        </TabPane>
+      </TabbedArea>
+    );
   }
 });
 

@@ -1,4 +1,5 @@
 var React = require('react');
+var Button = require('react-bootstrap/lib/button')
 
 var ProjectDataEntry = React.createClass({
   getInitialState: function() {
@@ -43,7 +44,7 @@ var ProjectDataEntry = React.createClass({
     return (
       <div>Project Fields for: {this.props.project.name}
         {rows}
-        <input type="submit" value="Submit Data" onClick={this.submitHandler}/>
+        <Button onClick={this.submitHandler}>Submit Data</Button>
       </div>
     );
   }

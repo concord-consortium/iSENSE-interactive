@@ -1,9 +1,14 @@
 var React = require('react');
-var ClassPeriodInfo = require('./class-period-info');
+
+var Navbar = require('react-bootstrap/lib/navbar');
+var PanelGroup = require('react-bootstrap/lib/panelgroup');
+var Panel = require('react-bootstrap/lib/panel');
+
+var ClassPeriodChooser = require('./class-period-chooser');
 var ClassPeriod = require('../models/class-period');
-var ProjectInfo = require('./project-info');
+var ProjectChooser = require('./project-chooser');
 var Project = require('../models/project');
-var TeamInfo = require('./team-info');
+var TeamForm = require('./team-form');
 var DatasetArea = require('./dataset-area');
 var Dataset = require('../models/dataset');
 
@@ -16,7 +21,8 @@ var App = React.createClass({
       classPeriod: this.mockClassPeriods[0],
       project: this.mockProjects[0],
       team: {name: "My Team"},
-      datasets: []
+      datasets: [],
+      activePanel: false
   	};
   },
 
@@ -47,7 +53,7 @@ var App = React.createClass({
 	}),
 	new ClassPeriod({
 		"uri": "https://itsi.portal.concord.org/classes/2",
-		"name": "Period 2",
+		"name": "Really Long Class Name Period 2",
 		"state": "MA",
 		"teachers": [
 		   {
@@ -61,7 +67,7 @@ var App = React.createClass({
   ],
 
   classPeriodChangeHandler: function(newClassPeriod) {
-  	this.setState({classPeriod: newClassPeriod});
+  	this.setState({classPeriod: newClassPeriod, activePanel: false});
   },
 
   teamChangeHandler: function(newTeam) {
@@ -79,25 +85,80 @@ var App = React.createClass({
     this.forceUpdate();
   },
 
+  handlePanelSelect: function(activeKey) {
+    if(this.state.activePanel === activeKey){
+      this.setState({activePanel: false});
+    } else {
+      this.setState({activePanel: activeKey});
+    }
+  },
+
+  _projectHeader: function() {
+    if(this.state.project === null){
+      return "Select a Project";
+    }
+
+     var projectHeader = [
+       "Project: " + this.state.project.name
+     ]
+
+    // enabled when this is running as an interactive
+    if(false) {
+      projectHeader.push(
+         <a target="_blank" href={this.props.project.isenseProjectLink}>full iSENSE project
+         </a>)
+    }
+
+    return projectHeader;
+  },
+
+  _classPeriodHeader: function() {
+    if(this.state.classPeriod === null){
+      return "Add a Class";
+    } else {
+      return "Class: " + this.state.classPeriod.summaryText();
+    }
+  },
+
+  _teamHeader: function() {
+    if(this.state.team === null){
+      return "Enter Your Team";
+    } else {
+      return "Team: " + this.state.team.name;
+    }
+  },
+
   render: function() {
+    // We might also want to keep a list of teams to make it easier for teams to
+    // see the teams that they have used before
+    // but this is something that seems not critical for the first version
     return (
       <div>
-        <ClassPeriodInfo
-          classPeriod={this.state.classPeriod}
-          classPeriods={this.mockClassPeriods}
-          onChange={this.classPeriodChangeHandler}/>
-        <ProjectInfo
-          project={this.state.project}
-          projects={this.mockProjects}
-          onChange={this.projectChangeHandler}/>
-        {
-          // We might also want to keep a list of teams to make it easier for teams to
-          // see the teams that they have used before
-          // but this is something that seems not critical for the first version
-        }
-        <TeamInfo
-          team={this.state.team}
-          onChange={this.teamChangeHandler}/>
+        <Navbar brand='Water SCIENCE Monitor' inverse/>
+        <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
+          <Panel
+              eventKey='classPeriod'
+              header={this._classPeriodHeader()}>
+            <ClassPeriodChooser
+              classPeriods={this.mockClassPeriods}
+              onClassPeriodChoosen={this.classPeriodChangeHandler}/>
+          </Panel>
+          <Panel
+              eventKey='project'
+              header={this._projectHeader()}>
+            <ProjectChooser
+              currentProject={this.state.project}
+              projects={this.mockProjects}
+              onProjectChoosen={this.projectChangeHandler}/>
+          </Panel>
+          <Panel
+              eventKey='team'
+              header={this._teamHeader()}>
+            <TeamForm
+              team={this.state.team}
+              onChange={this.teamChangeHandler}/>
+          </Panel>
+        </PanelGroup>
         <DatasetArea
           project={this.state.project}
           datasets={this.state.datasets}

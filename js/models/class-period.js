@@ -19,7 +19,7 @@ var ClassPeriod = function(data){
   this.state = data.state;
   this.teachers = data.teachers;
   this.teacherName = data.teachers[0].last_name;
-}
+};
 
 ClassPeriod.prototype.isenseLabel = function() {
   // this label can only be 40 characters so:
@@ -47,7 +47,7 @@ ClassPeriod.prototype.isenseLabel = function() {
   }
   label = this.state + '-' + teacherLastName + '-' + className;
   return label.toLowerCase();
-}
+};
 
 ClassPeriod.prototype.contributorKey = function() {
   var key = this.uri;
@@ -59,6 +59,12 @@ ClassPeriod.prototype.contributorKey = function() {
   key = key.replace('http://', '');
   key = key.replace('https://', '');
   return key;
-}
+};
+
+ClassPeriod.prototype.summaryText = function() {
+  return this.name + ", " +
+         this.teacherName + ", " +
+         this.state;
+};
 
 module.exports = ClassPeriod;

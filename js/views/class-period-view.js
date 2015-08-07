@@ -3,9 +3,9 @@ var React = require('react');
 var ClassPeriodView = React.createClass({
   render: function() {
       return (
-        <span>Class: {this.props.classPeriod.name},
-              Teacher: {this.props.classPeriod.teacherName},
-              State: {this.props.classPeriod.state}
+        <span>{this.props.classPeriod.name},{" "}
+              {this.props.classPeriod.teacherName},{" "}
+              {this.props.classPeriod.state}
         </span>
       );
     }

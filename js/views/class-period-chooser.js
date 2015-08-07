@@ -1,5 +1,9 @@
 var React = require('react');
+
+var Input = require ('react-bootstrap/lib/input');
+var Button = require ('react-bootstrap/lib/Button');
 var ClassPeriodAddForm = require('./class-period-add-form');
+var ClassPeriodView = require('./class-period-view');
 
 var ClassPeriodChooser = React.createClass({
   getInitialState: function() {
@@ -23,62 +27,49 @@ var ClassPeriodChooser = React.createClass({
   },
 
   render: function() {
-    var mainComponent;
+    var existingClassChooser = false;
 
-    if(this.state.addingNewClassPeriod) {
-      return (
-        <div>
-          <h2>Choose or add a class</h2>
-          <ClassPeriodAddForm onClassPeriodChoosen={this.onClassPeriodChoosen}/>
-        </div>
-        );
-    } else {
-      return (
-        <div>
-          <h2>Choose or add a class</h2>
-          <ClassPeriodChooserList
+    // Need to test this path
+    if (this.props.classPeriods.length !== 0) {
+      existingClassChooser =
+         <ClassPeriodChooserList
             classPeriods={this.props.classPeriods}
-            onClassPeriodChoosen={this.props.onClassPeriodChoosen}/>
-          <a href="enter_class_word" onClick={this.addNewClassPeriod}>Add New Class</a>
-        </div>
-      );
+            onClassPeriodChoosen={this.props.onClassPeriodChoosen}/>;
     }
-  }
-});
-
-var ClassPeriodChooserList = React.createClass({
-  render: function() {
-    // need a list of projects to choose from
-    var list = [];
-    this.props.classPeriods.forEach(function(classPeriod){
-      list.push(
-        <li>
-          <ClassPeriodChooserItem classPeriod={classPeriod} onSelect={this.props.onClassPeriodChoosen}/>
-        </li>);
-    }.bind(this));
 
     return (
-      <ul>
-        {list}
-      </ul>
+      <div>
+        { existingClassChooser }
+        <ClassPeriodAddForm onClassPeriodChoosen={this.onClassPeriodChoosen}/>
+      </div>
     );
   }
 });
 
-var ClassPeriodChooserItem = React.createClass({
-  selectClassPeriod: function(e) {
-    e.preventDefault();
-    this.props.onSelect(this.props.classPeriod);
+var ClassPeriodChooserList = React.createClass({
+  handleChange: function(e) {
+    var match = null;
+    this.props.classPeriods.forEach(function(classPeriod){
+      if(classPeriod.uri === e.target.value){
+        match = classPeriod;
+      }
+    });
+    this.props.onClassPeriodChoosen(match);
   },
 
   render: function() {
-    var classPeriodURL = this.props.classPeriod.uri;
+    var list = [];
+    this.props.classPeriods.forEach(function(classPeriod){
+      list.push(
+        <option value={classPeriod.uri}><ClassPeriodView classPeriod={classPeriod}/></option>
+      );
+    }.bind(this));
+
     return (
-      <a href={classPeriodURL}
-         onClick={this.selectClassPeriod}
-      >
-        {this.props.classPeriod.name}
-      </a>
+      <Input type='select' label='Select Existing Class' placeholder='select'
+        onChange={this.handleChange}>
+        {list}
+      </Input>
     );
   }
 });
