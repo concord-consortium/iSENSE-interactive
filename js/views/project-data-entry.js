@@ -34,6 +34,12 @@ var ProjectDataEntry = React.createClass({
       );
     }
 
+    if(this.props.project.isenseProject === null){
+      return (
+        <div>Unable to load Project Information</div>
+      );
+    }
+
     var rows = [];
     this.props.project.dataFields.forEach(function(field){
       rows.push(
