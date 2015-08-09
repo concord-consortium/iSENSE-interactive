@@ -67,4 +67,17 @@ ClassPeriod.prototype.summaryText = function() {
          this.state;
 };
 
+ClassPeriod.prototype.serialize = function(manager) {
+  return {
+    uri: this.uri,
+    name: this.name,
+    state: this.state,
+    teachers: this.teachers
+  };
+};
+
+ClassPeriod.deserialize = function(manager, data) {
+  return new ClassPeriod(data);
+};
+
 module.exports = ClassPeriod;

@@ -1,16 +1,16 @@
 // Projects can either be filled out with their iSENSE data
 // or they can just contain a name and id
 var Project = function(data){
+  // these are all serialized
   this.id = data.id;
   this.name = data.name;
+  // hack to cause connection error
   this.server = "http://isenseproject.org";
-  this.isenseProjectLink = this.server + "/projects/" + this.id;
-  // this should be serialized
-  this.isenseProject = {};
+  this.isenseProject = ('isenseProject' in data) ? data.isenseProject : null;
+
   // this could be serialized but it is not required
-  this.dataFields = [];
-  // this should be serialized
-  this.submittedDatasets = [];
+  this.dataFields = ('dataFields' in data) ? data.dataFields : [];
+
   this.loading = false;
 };
 
@@ -25,17 +25,41 @@ Project.prototype.load = function (callback){
     self.isenseProject = JSON.parse(this.responseText);
     self.parseFields();
     self.loading = false;
+
+    // what we really want to do here is send a generic event (to the dispatcher)
+    // so the views that care about this particular project can update if necessary
+    // alternatively these views could add listeners to this model and then
+    // update the state when this project is loaded
     if (typeof callback !== 'undefined'){
       callback();
     }
   };
-  oReq.open("get", this.server + "/api/v1/projects/" + this.id + "?recur=true", true);
+
+  oReq.onerror = function () {
+    self.loading = false;
+  }
+
+  // we should only pass the recur param if we need all of the datasets
+  // the mobile app doesn't need all of the datasets
+  // oReq.open("get", this.server + "/api/v1/projects/" + this.id + "?recur=true", true);
+
+  // offline hack
+  oReq.open("get", this.server + "/api/v1/projects/" + this.id, true);
   oReq.send();
 };
+
+Project.prototype.isenseProjectLink = function(){
+  return this.server + "/projects/" + this.id;
+}
 
 Project.prototype.parseFields = function(){
   var project = this.isenseProject,
       ids;
+
+  if(this.isenseProject === null){
+    return;
+  }
+
   this.dataFields = [];
   this.fieldIDs = {};
   ids = this.fieldIDs;
@@ -103,5 +127,20 @@ Project.prototype.uploadData = function(uploadInfo, callback) {
     };
 
 };
+
+Project.prototype.serialize = function(manager) {
+  return {
+    id: this.id,
+    server: this.server,
+    name: this.name,
+    isenseProject: this.isenseProject
+  }
+}
+
+Project.deserialize = function(manager, data) {
+  var project = new Project(data);
+  project.parseFields();
+  return project;
+}
 
 module.exports = Project;

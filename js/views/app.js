@@ -4,6 +4,8 @@ var Navbar = require('react-bootstrap/lib/navbar');
 var PanelGroup = require('react-bootstrap/lib/panelgroup');
 var Panel = require('react-bootstrap/lib/panel');
 
+
+var AppState = require('../models/app-state');
 var ClassPeriodChooser = require('./class-period-chooser');
 var ClassPeriod = require('../models/class-period');
 var ProjectChooser = require('./project-chooser');
@@ -12,30 +14,42 @@ var TeamForm = require('./team-form');
 var DatasetArea = require('./dataset-area');
 var Dataset = require('../models/dataset');
 
+var StorageManager = require('../models/storage-manager');
+
 var App = React.createClass({
   getInitialState: function() {
-
-    this.mockProjects[0].load(this.projectLoadHandler);
-
     return {
       classPeriod: this.mockClassPeriods[0],
-      project: this.mockProjects[0],
+      projects: [],
+      project: null,
       team: {name: "My Team"},
       datasets: [],
       activePanel: false
   	};
   },
 
-  mockProjects: [
-	  new Project({
-	   "id": "1186",
-	   "name": "Interactive with Contributor Keys Test"
-	  }),
-	  new Project({
-	    "id": "1187",
-	    "name": "Build a better filter"
-	  })
-  ],
+  componentDidMount: function() {
+    // load the AppState instance or create a new one if it is not avialable
+    StorageManager.initializeTypes();
+    this.appState = StorageManager.find('AppState', 'singleton');
+    if (this.appState === null) {
+      this.appState = new AppState();
+    }
+
+    this.appState.updateProjects(function(error){
+      // this will be called before each individual projects is loaded
+      // but at least the list of projects will be available
+      this.setState({projects: this.appState.projects});
+      StorageManager.save(this.appState, 'AppState', 'singleton');
+    }.bind(this));
+  },
+
+  // this is currently not used because all of the projects are loaded at the beginning
+  // and we dont' have a way yet to know when a project is loaded
+  projectLoadHandler: function() {
+    // there is probably is a better way to do this
+    this.forceUpdate();
+  },
 
   mockClassPeriods: [
 	new ClassPeriod({
@@ -71,19 +85,18 @@ var App = React.createClass({
   },
 
   teamChangeHandler: function(newTeam) {
-  	this.setState({team: newTeam});
+  	this.setState({team: newTeam, activePanel: false});
   },
 
   projectChangeHandler: function(newProject) {
-  	this.setState({project: newProject});
+  	this.setState({project: newProject, activePanel: false});
     // add a callback so we can update the view after it is loaded
-    newProject.load(this.projectLoadHandler);
+    // in the app, instead of this we want to load all of the projects when
+    // the app starts up.
+    // in the interactive, this approach would be ok
+    // newProject.load(this.projectLoadHandler);
   },
 
-  projectLoadHandler: function() {
-    // there is probably is a better way to do this
-    this.forceUpdate();
-  },
 
   handlePanelSelect: function(activeKey) {
     if(this.state.activePanel === activeKey){
@@ -105,7 +118,7 @@ var App = React.createClass({
     // enabled when this is running as an interactive
     if(false) {
       projectHeader.push(
-         <a target="_blank" href={this.props.project.isenseProjectLink}>full iSENSE project
+         <a target="_blank" href={this.props.project.isenseProjectLink()}>full iSENSE project
          </a>)
     }
 
@@ -148,7 +161,7 @@ var App = React.createClass({
               header={this._projectHeader()}>
             <ProjectChooser
               currentProject={this.state.project}
-              projects={this.mockProjects}
+              projects={this.state.projects}
               onProjectChoosen={this.projectChangeHandler}/>
           </Panel>
           <Panel
@@ -182,14 +195,41 @@ var App = React.createClass({
     newDatasets.push(dataset);
     this.setState({datasets: newDatasets});
 
-    // probably need to change some state to indicate that we are uploading
-    // the dataset
-    // also want to display a list of datasets associated with this project and team. We might
-    // want to show all datasets for this project across all teams.  This will make it easier if
-    // a device is used by mulitple teams out in the field.
-    // my current approach is to use a tabbed navigation for this: "Add Dataset", "Dataset List"
-    // if the datasets are not team specific then the "Add Dataset" could be the place to show and
-    // and change the team information
+    // need to change some state to indicate that we are uploading otherwise the submit
+    // doesn't provide feedback
+
+    // save this new dataset to local storage. Ideally we'd use localStorage as the main location
+    // for these datasets. But that doesn't work well with react since it needs to use the 
+    // set state.  So localStorage is going to have to be be a copy, and then when a dataset is
+    // updated we need to update localStorage too.  We could let the DataSet class work with its
+    // local storage object, but I we need to assume that localStorage requires calling 'set'
+    // inorder to update. So if we are storing more than this list of datasets we should put the 
+    // datasets in their own key and update this whole key each time a new one is added
+    // then when the app loads we 'rehydrate'  the dataset objects from localStorage
+    // the dataset can save a pointer to its project this way when it is rehydrated that can
+    // be looked up again, it also needs to save the class info and team
+    // the dataset needs enough info to be submitted again
+    // to keep things consitent we need to save the following in localstorage:
+    //  - projects
+    //  - classPeriods
+    //  - datasets
+    // the serialized dataset can reference the project with an URL, the classPeriod with an URL
+    // serialization: the project, classPeriod, and dataset can provide their own serialize methods they have
+    // access to all they need.
+    // deserialization: the project, and classPeriod can deserialize themselves. The dataset would need access
+    //   to a service so it can look up the project and classPeriod associated with itself
+    //     - or -
+    //   the dataset can be changed to always just store these URLs and have access to a lookup map
+    //    to find the objects when they are needed, currently this lookup when it is submitted and when getting
+    //    the human data
+    //     - or -
+    //   a serialization manager can know enough about the state to look up the Project and ClassPeriod for
+    //    the dataset
+
+    // We also need to store the projects in local storage, otherwise out in the field users won't
+    // be able to enter data
+
+
   }
 });
 
