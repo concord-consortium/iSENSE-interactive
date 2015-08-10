@@ -195,7 +195,7 @@ var App = React.createClass({
 
   submitData: function(data) {
     var dataset = new Dataset(this.state.project,
-           this.state.classPeriod, this.state.team, data),
+           this.state.classPeriod, this.state.team, data.data, data.photo),
         newDatasets = [];
 
     dataset.submit(function (uploadedDataset, result){

@@ -1,13 +1,14 @@
 var StorageManager = require("./storage-manager");
 var uuid = require('node-uuid');
 
-var Dataset = function(project, classPeriod, team, data){
+var Dataset = function(project, classPeriod, team, data, photo){
   this.project = project;
   this.classPeriod = classPeriod;
   this.team = team;
   this.latitude = null;
   this.longitude = null;
   this.data = data;
+  this.photo = photo;
   // could be created, uploading, uploaded, failed, or saved
   this.status = "created";
   // this is the id of the dataset stored in isense
@@ -37,6 +38,51 @@ Dataset.prototype._getLocation = function(callback) {
 
   navigator.geolocation.getCurrentPosition(success, error);
 }
+
+Dataset.prototype._uploadPhoto = function(callback) {
+  // this assumes the isenseID for this dataset is set
+  if(this.photo === null){
+    return;
+  }
+
+  if(typeof this.photo === 'string' || this.photo instanceof String){
+    // this should be a File URI from cordova's camera plugin
+    window.resolveLocalFileSystemURL(this.photo, function(fileEntry) {
+      try {
+        var options = new FileUploadOptions();
+        options.fileKey = "upload";
+        options.chunkedMode = false;
+        options.fileName = this.photo.substr(this.photo.lastIndexOf('/') + 1);
+        options.mimeType = "image/jpeg";
+        options.params = {
+          "contribution_key": this.classPeriod.contributorKey(),
+          "contributor_name": this.team.name,
+          "type": "data_set",
+          "id": "" + this.isenseID
+        }
+        var transfer = new FileTransfer();
+        transfer.upload(fileEntry.toInternalURL(), encodeURI("http://isenseproject.org/api/v1/media_objects/"),
+                        function(r) {
+                          console.log('Image uploaded');
+                          callback(false);
+                        },
+                        function(error) {
+                          console.log("Upload Fail -> " + error.code + " " + error.source);
+                          callback(error);
+                        },
+                        options);
+      } catch(err) {
+        console.log("Failed Image upload: " + err.message);
+        callback(err);
+      }
+    }.bind(this), function(err) {
+      console.log("Failed to resolve image url: " + err.message);
+      callback(err);
+    });
+  } else {
+    // this should do a File based Browser upload
+  }
+};
 
 Dataset.prototype._submitAfterLocation = function(callback) {
   // data contains the data for the fields defined in the project
@@ -74,9 +120,19 @@ Dataset.prototype._submitAfterLocation = function(callback) {
     this.isenseID = isenseResult.id;
     this.status = "uploaded";
 
-    if (typeof callback !== 'undefined'){
-      callback(this, isenseResult);
+    // if there is an image
+    // we need to upload it here
+    if(this.photo === null){
+      if (typeof callback !== 'undefined'){
+        callback(this, isenseResult);
+      }
+    } else {
+      this._uploadPhoto(function(error){
+        // FIXME this is currently ignoring any errors while upload the image
+        callback(this, isenseResult);
+      }.bind(this));
     }
+
 
     // we used to upload images at this point
     // var uploadingImage =

@@ -1,9 +1,17 @@
 var React = require('react');
 var Button = require('react-bootstrap/lib/button')
+var Input = require('react-bootstrap/lib/input')
+
+var PhotoInput = require('./photo-input');
 
 var ProjectDataEntry = React.createClass({
   getInitialState: function() {
   	return {
+      // this could be an imageURI from cordova
+      // or a File object from the browser
+      photo: null,
+      // these are the iSENSE field values
+      data: {}
     };
   },
 
@@ -17,10 +25,18 @@ var ProjectDataEntry = React.createClass({
     WS.submitData(this.state);
   },
 
+  // this is now going to require us to clear the form after submit
+  // so the don't submit the same photo twice
+  handlePhotoSelected: function(photo) {
+    // photo can be a fileURI from cordova or a Browser File object
+    this.setState({photo: photo});
+  },
+
   handleFieldChange: function(fieldId, value) {
-    var newState = {};
+    // clone the data state
+    var newState = JSON.parse(JSON.stringify(this.state.data));
     newState[fieldId] = value;
-    this.setState(newState);
+    this.setState({data: newState});
   },
 
   render: function() {
@@ -55,6 +71,7 @@ var ProjectDataEntry = React.createClass({
     return (
       <form className="form-horizontal">
         {rows}
+        <PhotoInput onPhotoSelected={this.handlePhotoSelected}/>
         <Button onClick={this.submitHandler}>Submit Data</Button>
       </form>
     );
