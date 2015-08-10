@@ -13,21 +13,51 @@ var ClassPeriodAddForm = React.createClass({
     };
   },
 
+  mockClassPeriods: [
+    new ClassPeriod({
+      "uri": "https://itsi.portal.concord.org/classes/1",
+      "name": "Period 1",
+      "state": "MA",
+      "teachers": [
+         {
+            "id": "https://itsi.portal.concord.org/users/1",
+            "first_name": "Scott",
+            "last_name": "Cytacki"
+          }
+      ],
+      "computed label_needs to be less than 40 chars": "ma-cytacki-period1"
+    }),
+    new ClassPeriod({
+      "uri": "https://itsi.portal.concord.org/classes/2",
+      "name": "Really Long Class Name Period 2",
+      "state": "MA",
+      "teachers": [
+         {
+            "id": "https://itsi.portal.concord.org/users/2",
+            "first_name": "Jerome",
+            "last_name": "Chang"
+          }
+      ],
+      "computed label_needs to be less than 40 chars": "ma-chang-period2"
+    }),
+    new ClassPeriod({
+      "uri": "https://itsi.portal.concord.org/classes/3",
+      "name": "Period 3",
+      "state": "TX",
+      "teachers": [
+         {
+            "id": "https://itsi.portal.concord.org/users/3",
+            "first_name": "Allison",
+            "last_name": "Smith"
+          }
+      ],
+    })
+  ],
+
   findClassHandler: function (e) {
   	e.preventDefault();
   	this.setState({
-  		foundClassPeriod: 	new ClassPeriod({
-			"uri": "https://itsi.portal.concord.org/classes/3",
-			"name": "Period 3",
-			"state": "TX",
-			"teachers": [
-			   {
-			   	  "id": "https://itsi.portal.concord.org/users/3",
-			   	  "first_name": "Allison",
-			   	  "last_name": "Smith"
-			   	}
-			],
-    	})
+  		foundClassPeriod: this.mockClassPeriods[1]
   	});
   	// send the class word to the portal and get back the class info
   	// for now we can just load some mock data regardless of the classword

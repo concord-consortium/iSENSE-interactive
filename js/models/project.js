@@ -90,6 +90,10 @@ Project.prototype.parseFields = function(){
   }.bind(this));
 };
 
+Project.prototype.hasLocation = function() {
+  return ('latitude' in this.fieldIDs) && ('longitude' in this.fieldIDs)
+}
+
 Project.prototype.uploadData = function(uploadInfo, callback) {
  // uploadData({
  //      contributionKey : this.state.classPeriod.isenseLabel(),

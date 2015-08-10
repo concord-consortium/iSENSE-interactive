@@ -6,26 +6,6 @@ var ClassPeriodAddForm = require('./class-period-add-form');
 var ClassPeriodView = require('./class-period-view');
 
 var ClassPeriodChooser = React.createClass({
-  getInitialState: function() {
-    return {
-      addingNewClassPeriod: false
-    };
-  },
-
-  addNewClassPeriod: function(e){
-    e.preventDefault();
-    this.setState({addingNewClassPeriod: true});
-  },
-
-  onClassPeriodChoosen: function(classPeriod) {
-    this.setState({addingNewClassPeriod: false});
-    this.props.onClassPeriodChoosen(classPeriod);
-  },
-
-  cancelAddNewClassPeriod: function(){
-    this.props.onClassPeriodChoosen(null);
-  },
-
   render: function() {
     var existingClassChooser = false;
 
@@ -33,6 +13,7 @@ var ClassPeriodChooser = React.createClass({
     if (this.props.classPeriods.length !== 0) {
       existingClassChooser =
          <ClassPeriodChooserList
+            classPeriod={this.props.classPeriod}
             classPeriods={this.props.classPeriods}
             onClassPeriodChoosen={this.props.onClassPeriodChoosen}/>;
     }
@@ -40,7 +21,7 @@ var ClassPeriodChooser = React.createClass({
     return (
       <div>
         { existingClassChooser }
-        <ClassPeriodAddForm onClassPeriodChoosen={this.onClassPeriodChoosen}/>
+        <ClassPeriodAddForm onClassPeriodChoosen={this.props.onClassPeriodAdded}/>
       </div>
     );
   }
@@ -65,8 +46,13 @@ var ClassPeriodChooserList = React.createClass({
       );
     }.bind(this));
 
+    var defaultValue = false;
+    if(this.props.classPeriod !== null){
+      defaultValue = this.props.classPeriod.uri;
+    }
+
     return (
-      <Input type='select' label='Select Existing Class' placeholder='select'
+      <Input type='select' defaultValue={defaultValue} label='Select Existing Class' placeholder='select'
         onChange={this.handleChange}>
         {list}
       </Input>

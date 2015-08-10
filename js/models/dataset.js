@@ -1,9 +1,12 @@
+var StorageManager = require("./storage-manager");
 var uuid = require('node-uuid');
 
 var Dataset = function(project, classPeriod, team, data){
   this.project = project;
   this.classPeriod = classPeriod;
   this.team = team;
+  this.latitude = null;
+  this.longitude = null;
   this.data = data;
   // could be created, uploading, uploaded, failed, or saved
   this.status = "created";
@@ -13,7 +16,29 @@ var Dataset = function(project, classPeriod, team, data){
   this.uri = uuid.v1();
 };
 
-Dataset.prototype.submit = function(callback) {
+Dataset.prototype._getLocation = function(callback) {
+  var self = this;
+
+  if (!navigator.geolocation){
+    callback();
+    return;
+  }
+
+  function success(geoPosition) {
+    self.latitude = geoPosition.coords.latitude;
+    self.longitude = geoPosition.coords.longitude;
+    callback();
+  };
+
+  function error() {
+    console.log("Unable to retrieve your location");
+    callback();
+  };
+
+  navigator.geolocation.getCurrentPosition(success, error);
+}
+
+Dataset.prototype._submitAfterLocation = function(callback) {
   // data contains the data for the fields defined in the project
   // this requires the contributor key to have been created in iSENSE first
   // Get the variables that the user entered in the HTML portion of the app.
@@ -28,10 +53,11 @@ Dataset.prototype.submit = function(callback) {
   dataSet[fieldIDs.state] = [this.classPeriod.state];
 
   // add position data if it exists
-  // if (position.latitude && position.longitude){
-  //   data[latitudeFieldNumber] = [position.latitude];
-  //   data[longitudeFieldNumber] = [position.longitude];
-  // }
+  if (this.latitude !== null && this.longitude !== null &&
+      this.project.hasLocation()){
+    dataSet[fieldIDs.latitude] = [this.latitude];
+    dataSet[fieldIDs.longitude] = [this.longitude];
+  }
 
   // add all input field values to the data set
   for (var key in this.data) {
@@ -78,6 +104,16 @@ Dataset.prototype.submit = function(callback) {
   // and change the team information
 };
 
+Dataset.prototype.submit = function(callback) {
+  if(this.project.hasLocation()){
+    this._getLocation(function(){
+      this._submitAfterLocation(callback);
+    }.bind(this));
+  } else {
+    this._submitAfterLocation(callback);
+  }
+};
+
 Dataset.prototype.dataForHumans = function(){
   var forHumans = {},
       field;
@@ -90,6 +126,10 @@ Dataset.prototype.dataForHumans = function(){
     }
   }
 };
+
+Dataset.prototype.save = function() {
+  StorageManager.save(this, "Dataset", this.uri);
+}
 
 Dataset.prototype.serialize = function(manager){
   // return a json compatible object that includes
@@ -115,7 +155,11 @@ Dataset.deserialize = function(manager, data){
       classPeriod = manager.findRequired("ClassPeriod", data.classPeriod),
       dataset;
 
-  return new Dataset(project, classPeriod, {name: data.team}, data.data);
+  dataset = new Dataset(project, classPeriod, {name: data.team}, data.data);
+  dataset.status = data.status;
+  dataset.uri = data.uri;
+  dataset.isenseID = data.isenseID;
+  return dataset;
 }
 
 module.exports = Dataset;

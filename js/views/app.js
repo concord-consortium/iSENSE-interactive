@@ -19,10 +19,11 @@ var StorageManager = require('../models/storage-manager');
 var App = React.createClass({
   getInitialState: function() {
     return {
-      classPeriod: this.mockClassPeriods[0],
+      classPeriods: [],
+      classPeriod: null,
       projects: [],
       project: null,
-      team: {name: "My Team"},
+      team: null,
       datasets: [],
       activePanel: false
   	};
@@ -36,11 +37,18 @@ var App = React.createClass({
       this.appState = new AppState();
     }
 
+    this.setState({
+      datasets: this.appState.datasets,
+      classPeriods: this.appState.classPeriods,
+      project: this.appState.project,
+      classPeriod: this.appState.classPeriod
+    });
+
     this.appState.updateProjects(function(error){
       // this will be called before each individual projects is loaded
       // but at least the list of projects will be available
       this.setState({projects: this.appState.projects});
-      StorageManager.save(this.appState, 'AppState', 'singleton');
+      this.appState.save();
     }.bind(this));
   },
 
@@ -51,37 +59,30 @@ var App = React.createClass({
     this.forceUpdate();
   },
 
-  mockClassPeriods: [
-	new ClassPeriod({
-		"uri": "https://itsi.portal.concord.org/classes/1",
-		"name": "Period 1",
-		"state": "MA",
-		"teachers": [
-		   {
-		   	  "id": "https://itsi.portal.concord.org/users/1",
-		   	  "first_name": "Scott",
-		   	  "last_name": "Cytacki"
-		   	}
-		],
-		"computed label_needs to be less than 40 chars": "ma-cytacki-period1"
-	}),
-	new ClassPeriod({
-		"uri": "https://itsi.portal.concord.org/classes/2",
-		"name": "Really Long Class Name Period 2",
-		"state": "MA",
-		"teachers": [
-		   {
-		   	  "id": "https://itsi.portal.concord.org/users/2",
-		   	  "first_name": "Jerome",
-		   	  "last_name": "Chang"
-		   	}
-		],
-		"computed label_needs to be less than 40 chars": "ma-chang-period2"
-	})
-  ],
-
-  classPeriodChangeHandler: function(newClassPeriod) {
+  handleClassPeriodChange: function(newClassPeriod) {
+    // the user has selected an existing classperiod
+    this.appState.classPeriod = newClassPeriod;
+    this.appState.save();
   	this.setState({classPeriod: newClassPeriod, activePanel: false});
+  },
+
+  handleClassPeriodAdd: function(addedClassPeriod) {
+    // the user has added a new class period
+    // it is possible that this added Class is actually one that
+    // already exists in the app, so in that case we need to use the same
+    // object otherwise other object references like the dataset will
+    // get confused.
+    var storedClassPeriod = StorageManager.find("ClassPeriod", addedClassPeriod.uri);
+    if(storedClassPeriod !== null){
+      // there is a chance that the class name has changed or the teacher's
+      // name has changed, but that is slim and this isn't the place to handle that
+      addedClassPeriod = storedClassPeriod;
+    } else {
+      this.appState.addClassPeriod(addedClassPeriod);
+    }
+    this.appState.classPeriod = addedClassPeriod;
+    this.appState.save();
+    this.setState({classPeriod: addedClassPeriod, activePanel: false});
   },
 
   teamChangeHandler: function(newTeam) {
@@ -89,6 +90,9 @@ var App = React.createClass({
   },
 
   projectChangeHandler: function(newProject) {
+    this.appState.project = newProject;
+    this.appState.save();
+
   	this.setState({project: newProject, activePanel: false});
     // add a callback so we can update the view after it is loaded
     // in the app, instead of this we want to load all of the projects when
@@ -97,13 +101,18 @@ var App = React.createClass({
     // newProject.load(this.projectLoadHandler);
   },
 
-
   handlePanelSelect: function(activeKey) {
     if(this.state.activePanel === activeKey){
       this.setState({activePanel: false});
     } else {
       this.setState({activePanel: activeKey});
     }
+  },
+
+  handleUploadDatasets: function() {
+    this.appState.uploadDatasets(function(dataset){
+      this.forceUpdate();
+    }.bind(this));
   },
 
   _projectHeader: function() {
@@ -153,8 +162,10 @@ var App = React.createClass({
               eventKey='classPeriod'
               header={this._classPeriodHeader()}>
             <ClassPeriodChooser
-              classPeriods={this.mockClassPeriods}
-              onClassPeriodChoosen={this.classPeriodChangeHandler}/>
+              classPeriod={this.state.classPeriod}
+              classPeriods={this.state.classPeriods}
+              onClassPeriodChoosen={this.handleClassPeriodChange}
+              onClassPeriodAdded={this.handleClassPeriodAdd}/>
           </Panel>
           <Panel
               eventKey='project'
@@ -175,7 +186,9 @@ var App = React.createClass({
         <DatasetArea
           project={this.state.project}
           datasets={this.state.datasets}
-          classPeriod={this.state.classPeriod}/>
+          classPeriod={this.state.classPeriod}
+          team={this.state.team}
+          onUploadDatasets={this.handleUploadDatasets}/>
       </div>
     );
   },
@@ -186,14 +199,16 @@ var App = React.createClass({
         newDatasets = [];
 
     dataset.submit(function (uploadedDataset, result){
+      // the dataset should be successfully uploaded
+      // need to resave it since the status should have changed
+      dataset.save();
+
       // there should be a better way to do this so we only update the dataset that changed
       this.forceUpdate();
     }.bind(this));
 
-    // keep track of these datasets so we can display them
-    newDatasets = this.state.datasets.slice(0);
-    newDatasets.push(dataset);
-    this.setState({datasets: newDatasets});
+    this.appState.addDataset(dataset);
+    this.setState({datasets: this.appState.datasets});
 
     // need to change some state to indicate that we are uploading otherwise the submit
     // doesn't provide feedback

@@ -24,8 +24,12 @@ var ProjectDataEntry = React.createClass({
   },
 
   render: function() {
-    if(this.props.project === null){
-      return false;
+    if(this.props.project === null ||
+       this.props.classPeriod === null ||
+       this.props.team === null){
+      return (
+        <div>A project, class, and team must be selected before adding data</div>
+      );
     }
 
     if(this.props.project.loading){
@@ -47,11 +51,12 @@ var ProjectDataEntry = React.createClass({
       );
     }.bind(this));
 
+    // need to add a field for the image
     return (
-      <div>Project Fields for: {this.props.project.name}
+      <form className="form-horizontal">
         {rows}
         <Button onClick={this.submitHandler}>Submit Data</Button>
-      </div>
+      </form>
     );
   }
 });
@@ -64,18 +69,24 @@ var ProjectFormField = React.createClass({
 
   render: function() {
     var unitString = "",
-        field = this.props.field;
+        field = this.props.field,
+        label;
 
     if(field.unit) {
       unitString = " (" + field.unit + ")";
     }
 
+    label = field.name + " " + unitString;
+
     // TODO add support for contratined text fields so they show a select box
     return (
-      <div>
-        <dt><label htmlFor={field.id}>{field.name} {unitString}</label></dt>
-        <dd><input type="text" ref="input" value={this.props.value} onChange={this.handleChange}/></dd>
-      </div>
+      <Input
+        type="text"
+        label={label}
+        labelClassName='col-xs-2'
+        wrapperClassName='col-xs-10'
+        value={this.props.value}
+        onChange={this.hangleChange}/>
     );
   }
 });

@@ -2,6 +2,7 @@ var React = require('react');
 
 var DatasetList = React.createClass({
   render: function() {
+
   	// need to go through the passed in datasets array
   	// only include datasets that have the same project and classPeriod
   	var datasetRows = [];
@@ -13,13 +14,19 @@ var DatasetList = React.createClass({
   		}
   	}.bind(this));
 
+    if(datasetRows.length === 0) {
+      return (
+        <div>No datasets have been submitted for this project and class</div>
+      );
+    }
+
     return (
       <div>
         <ul>
           {datasetRows}
         </ul>
       </div>
-    )
+    );
   }
 });
 
