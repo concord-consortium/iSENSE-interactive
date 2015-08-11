@@ -9,7 +9,9 @@ var ClassPeriodAddForm = React.createClass({
   getInitialState: function() {
   	return {
       classword: "",
-      foundClassPeriod: null
+      foundClassPeriod: null,
+      loadingClassInfo: false,
+      errorLoadingClassInfo: null
     };
   },
 
@@ -54,11 +56,51 @@ var ClassPeriodAddForm = React.createClass({
     })
   ],
 
+  classFound: function () {
+    this.setState({
+      foundClassPeriod: this.mockClassPeriods[1]
+    });
+  },
+
   findClassHandler: function (e) {
   	e.preventDefault();
-  	this.setState({
-  		foundClassPeriod: this.mockClassPeriods[1]
-  	});
+    this.setState({ loadingClassInfo: true, errorLoadingClassInfo: null, foundClassPeriod: null});
+    var self = this;
+    var oReq = new XMLHttpRequest();
+
+    oReq.onload = function(){
+      if (this.status === 404){
+        self.setState({loadingClassInfo: false,
+          errorLoadingClassInfo: "No class with this classword"});
+        return;
+      }
+      if(this.status !== 200){
+        self.setState({loadingClassInfo: false,
+          errorLoadingClassInfo: "Unknown error while looking for class"});
+        return;
+      }
+
+      var data = JSON.parse(this.responseText);
+      var classPeriod = new ClassPeriod(data);
+      self.setState({foundClassPeriod: classPeriod, loadingClassInfo: false});
+    };
+    oReq.onerror = function () {
+      self.setState({loadingClassInfo: false,
+        errorLoadingClassInfo: "Unknown error while looking for class"});
+    };
+
+    oReq.onabort = function () {
+      self.setState({loadingClassInfo: false,
+        errorLoadingClassInfo: "Aborted class lookup"});
+    };
+
+    // need to URL enccode this
+    var encodedClassword = encodeURIComponent(this.state.classword);
+    oReq.open("get",
+      'https://waterscience-isense.concord.org/classes/info?class_word=' + encodedClassword, 
+      true);
+    oReq.send();
+
   	// send the class word to the portal and get back the class info
   	// for now we can just load some mock data regardless of the classword
   	// after we have the info we should display it so the user can confirm
@@ -86,9 +128,16 @@ var ClassPeriodAddForm = React.createClass({
         </div>
     }
 
-    var foundClassPeriodSummary = "";
+    var resultText = "";
+    var resultStyle = false;
     if(this.state.foundClassPeriod !== null) {
-      foundClassPeriodSummary = this.state.foundClassPeriod.summaryText();
+      resultText = this.state.foundClassPeriod.summaryText();
+      resultStyle = 'success';
+    } else if(this.state.errorLoadingClassInfo !== null){
+      resultStyle = 'error'
+      resultText = this.state.errorLoadingClassInfo;
+    } else if(this.state.loadingClassInfo) {
+      resultText = "Loading...";
     }
 
     var findClassButton = <Button type="submit" onClick={this.findClassHandler}>Find</Button>;
@@ -97,7 +146,6 @@ var ClassPeriodAddForm = React.createClass({
           disabled={this.state.foundClassPeriod === null}
           onClick={this.selectClassHandler}>
         Select</Button>;
-
 
     return (
       <div>
@@ -113,8 +161,9 @@ var ClassPeriodAddForm = React.createClass({
   	  	</form>
         <Input
           type="text"
+          bsStyle={resultStyle}
           placeholder="result"
-          value={foundClassPeriodSummary}
+          value={resultText}
           buttonAfter={selectClassButton}
           readOnly
           disabled={this.state.foundClassPeriod === null}
