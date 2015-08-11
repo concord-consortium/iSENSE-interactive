@@ -4,6 +4,7 @@ var usState = "";
 var position = {};
 var groupFieldNumber;
 var teacherFieldNumber;
+var classFieldNumber;
 var stateFieldNumber;
 var latitudeFieldNumber;
 var longitudeFieldNumber;
@@ -70,8 +71,14 @@ function projectLoaded() {
 
   dataFields = [];
   project.fields.forEach(function(field){
-    if(field.name == "Group Name"){
+    // handle the new format name in the old interactive
+    if(field.name == "Group Name" || field.name == "Team Name"){
       groupFieldNumber = field.id;
+      return;
+    }
+    // this is a new field that this interactive will fake
+    if(field.name == "Class Name"){
+      classFieldNumber = field.id;
       return;
     }
     if(field.name == "Teacher Name"){
@@ -90,6 +97,7 @@ function projectLoaded() {
       longitudeFieldNumber = field.id;
       return;
     }
+
     dataFields.push(field);
   });
 
@@ -157,6 +165,9 @@ function createDataSet() {
   var data = {};
   data[groupFieldNumber] = [groupName];
   data[teacherFieldNumber] = [teacherName];
+  if(classFieldNumber){
+    data[classFieldNumber] = ['Unknown Class'];
+  }
   if (stateFieldNumber) {
     data[stateFieldNumber] = [usStateName];
   }
