@@ -36,7 +36,8 @@ var DatasetListItem = React.createClass({
   		<div>
   		  Team: {this.props.dataset.team.name},{" "}
   		  Data: {JSON.stringify(this.props.dataset.data)},{" "}
-  		  Status: {this.props.dataset.status}
+  		  Status: {this.props.dataset.status},{" "}
+        PhotoStatus: {this.props.dataset.photoStatus}
   		</div>
   		);
   }

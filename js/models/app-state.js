@@ -83,7 +83,7 @@ AppState.prototype.addClassPeriod = function(classPeriod) {
 
 AppState.prototype.uploadDatasets = function(callback) {
   this.datasets.forEach(function(dataset){
-    if(dataset.status !== 'uploaded'){
+    if(dataset.needsUploading()){
       dataset.submit(function(){
         // need to resave the dataset
         dataset.save();

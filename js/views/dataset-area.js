@@ -36,7 +36,7 @@ var DatasetUploader = React.createClass({
   notUploaded: function() {
     var count = 0;
     this.props.datasets.forEach(function(dataset){
-      if(dataset.status !== 'uploaded') {
+      if(dataset.needsUploading()) {
         count++;
       }
     });

@@ -8,9 +8,12 @@ var Dataset = function(project, classPeriod, team, data, photo){
   this.latitude = null;
   this.longitude = null;
   this.data = data;
-  this.photo = photo;
-  // could be created, uploading, uploaded, failed, or saved
+  // could be created, uploading, uploaded, failed
   this.status = "created";
+  this.photo = photo;
+  // if there is no photo we mark the status as uploaded to simplify
+  // logic later that is looking to see if the photo needs to be uploaded
+  this.photoStatus = (photo === null) ? "uploaded" : "created";
   // this is the id of the dataset stored in isense
   this.isenseID = "";
   // need to give this dataset a unique URI
@@ -40,6 +43,7 @@ Dataset.prototype._getLocation = function(callback) {
 }
 
 Dataset.prototype._uploadPhoto = function(callback) {
+  var self = this;
   // this assumes the isenseID for this dataset is set
   if(this.photo === null){
     return;
@@ -47,6 +51,8 @@ Dataset.prototype._uploadPhoto = function(callback) {
 
   if(typeof this.photo === 'string' || this.photo instanceof String){
     // this should be a File URI from cordova's camera plugin
+    this.photoStatus = "uploading";
+
     window.resolveLocalFileSystemURL(this.photo, function(fileEntry) {
       try {
         var options = new FileUploadOptions();
@@ -64,18 +70,22 @@ Dataset.prototype._uploadPhoto = function(callback) {
         transfer.upload(fileEntry.toInternalURL(), encodeURI("http://isenseproject.org/api/v1/media_objects/"),
                         function(r) {
                           console.log('Image uploaded');
+                          self.photoStatus = 'uploaded';
                           callback(false);
                         },
                         function(error) {
                           console.log("Upload Fail -> " + error.code + " " + error.source);
+                          self.photoStatus = 'failed';
                           callback(error);
                         },
                         options);
       } catch(err) {
         console.log("Failed Image upload: " + err.message);
+        self.photoStatus = 'failed';
         callback(err);
       }
     }.bind(this), function(err) {
+      self.photoStatus = 'failed';
       console.log("Failed to resolve image url: " + err.message);
       callback(err);
     });
@@ -84,7 +94,7 @@ Dataset.prototype._uploadPhoto = function(callback) {
   }
 };
 
-Dataset.prototype._submitAfterLocation = function(callback) {
+Dataset.prototype._upload = function(callback) {
   // data contains the data for the fields defined in the project
   // this requires the contributor key to have been created in iSENSE first
   // Get the variables that the user entered in the HTML portion of the app.
@@ -120,32 +130,19 @@ Dataset.prototype._submitAfterLocation = function(callback) {
     this.isenseID = isenseResult.id;
     this.status = "uploaded";
 
+    // save the dataset again after changing the status and getting the isenseID
+    this.save();
+
     // if there is an image
     // we need to upload it here
-    if(this.photo === null){
-      if (typeof callback !== 'undefined'){
-        callback(this, isenseResult);
-      }
+    if(this.photo == null){
+      callback(this, isenseResult);
     } else {
       this._uploadPhoto(function(error){
         // FIXME this is currently ignoring any errors while upload the image
         callback(this, isenseResult);
       }.bind(this));
     }
-
-
-    // we used to upload images at this point
-    // var uploadingImage =
-    //   uploadImage('file-select', server, datasetResult.id, contributionKey, combinedTeamName(),
-    //               function(){
-    //                  updateVisualization();
-    //               })
-
-    // if(!uploadingImage){
-    //   updateVisualization();
-    // }
-    // need to fire the callback to update the state
-
   }.bind(this));
 
   this.status = "uploading";
@@ -160,13 +157,32 @@ Dataset.prototype._submitAfterLocation = function(callback) {
   // and change the team information
 };
 
+Dataset.prototype.needsUploading = function() {
+  return (this.status !== "uploaded" || (this.photo != null && this.photoStatus !== "uploaded"));
+};
+
 Dataset.prototype.submit = function(callback) {
-  if(this.project.hasLocation()){
+  if(this.status === "uploaded"){
+    if(this.photoStatus === "uploaded"){
+      // nothing to do here
+      callback(this);
+    } else {
+      // need to upload the video
+      this._upload(callback);
+    }
+    return;
+  }
+
+  if(this.project.hasLocation() && (this.latitude == null || this.longitude == null)){
     this._getLocation(function(){
-      this._submitAfterLocation(callback);
+      // save after getting the location
+      this.save();
+      this._upload(callback);
     }.bind(this));
   } else {
-    this._submitAfterLocation(callback);
+    // either the project doesn't support location
+    // or the location has already been looked up
+    this._upload(callback);
   }
 };
 
@@ -201,7 +217,12 @@ Dataset.prototype.serialize = function(manager){
     classPeriod: this.classPeriod.uri,
     team: this.team.name,
     data: this.data,
+    latitude: this.latitude,
+    longitude: this.longitude,
     status: this.status,
+    // Need to do something special if the photo is a File object
+    photo: this.photo,
+    photoStatus: this.photoStatus,
     isenseID: this.isenseID
   });
 };
@@ -212,7 +233,11 @@ Dataset.deserialize = function(manager, data){
       dataset;
 
   dataset = new Dataset(project, classPeriod, {name: data.team}, data.data);
+  dataset.latitude = data.latitude;
+  dataset.longitude = data.longitude;
   dataset.status = data.status;
+  dataset.photo = data.photo;
+  dataset.photoStatus = data.photoStatus;
   dataset.uri = data.uri;
   dataset.isenseID = data.isenseID;
   return dataset;
