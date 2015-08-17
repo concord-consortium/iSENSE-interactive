@@ -5,7 +5,7 @@ var Project = function(data){
   this.id = data.id;
   this.name = data.name;
   // hack to cause connection error
-  this.server = "http://isenseproject.org";
+  this.server = "https://isenseproject.org";
   this.isenseProject = ('isenseProject' in data) ? data.isenseProject : null;
 
   // this could be serialized but it is not required

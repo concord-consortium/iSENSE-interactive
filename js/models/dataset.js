@@ -1,6 +1,8 @@
 var StorageManager = require("./storage-manager");
 var uuid = require('node-uuid');
 
+var MEDIA_API_URL = "https://isenseproject.org/api/v1/media_objects/";
+
 var Dataset = function(project, classPeriod, team, data, photo){
   this.project = project;
   this.classPeriod = classPeriod;
@@ -67,7 +69,7 @@ Dataset.prototype._uploadPhoto = function(callback) {
           "id": "" + this.isenseID
         }
         var transfer = new FileTransfer();
-        transfer.upload(fileEntry.toInternalURL(), encodeURI("http://isenseproject.org/api/v1/media_objects/"),
+        transfer.upload(fileEntry.toInternalURL(), encodeURI(MEDIA_API_URL),
                         function(r) {
                           console.log('Image uploaded');
                           self.photoStatus = 'uploaded';
@@ -89,8 +91,31 @@ Dataset.prototype._uploadPhoto = function(callback) {
       console.log("Failed to resolve image url: " + err.message);
       callback(err);
     });
-  } else {
-    // this should do a File based Browser upload
+  } else if (this.photo instanceof File) {
+    // Create a new FormData object.
+    var formData = new FormData();
+
+    // Add the file to the request.
+    formData.append('upload', this.photo, this.photo.name);
+    formData.append('contribution_key', this.classPeriod.contributorKey());
+    formData.append('contributor_name', this.team.name);
+    formData.append('type', 'data_set');
+    formData.append('id', this.isenseID);
+
+    // Post to iSENSE
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', MEDIA_API_URL, true);
+    xhr.send(formData);
+    xhr.onload = function () {
+      console.log('Image uploaded');
+      self.photoStatus = 'uploaded';
+      callback(false);
+    };
+    xhr.onerror = function (err) {
+      console.log("Upload Fail -> " + err);
+      self.photoStatus = 'failed';
+      callback(err);
+    };
   }
 };
 
@@ -207,10 +232,14 @@ Dataset.prototype.serialize = function(manager){
   // return a json compatible object that includes
   // the references to the project and classPeriod
 
-  // we could serialize the project and classPeriod here
-  // however the top level app also will need the same
-  // instance of these objects, so serialization might
-  // not be right
+  // if the photo is a string it means it is path returned by Cordova to the
+  // local file. In the interactive the photo will be a File object which
+  // we currently do not handle serializing
+  var photo = null;
+  if(typeof this.photo === 'string' || this.photo instanceof String){
+    photo = this.photo;
+  }
+
   return ({
     uri: this.uri,
     project: this.project.isenseProjectLink(),
@@ -220,8 +249,7 @@ Dataset.prototype.serialize = function(manager){
     latitude: this.latitude,
     longitude: this.longitude,
     status: this.status,
-    // Need to do something special if the photo is a File object
-    photo: this.photo,
+    photo: photo,
     photoStatus: this.photoStatus,
     isenseID: this.isenseID
   });

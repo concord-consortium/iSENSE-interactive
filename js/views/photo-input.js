@@ -60,6 +60,27 @@ var PhotoInput = React.createClass({
 
   },
 
+  handleFileSelect: function(event){
+    // Get the selected files from the input.
+    var files = event.target.files;
+
+    if (files.length == 0) {
+      // no file was selected
+      return;
+    }
+
+    // check the first file
+    var file = files[0];
+
+    // Check the file type.
+    if (!file.type.match('image.*')) {
+      alert("only supports image files");
+      return;
+    }
+
+    this.props.onPhotoSelected(file);
+  },
+
   render: function(){
     if('camera' in navigator){
       // do Cordova photo capture
@@ -86,7 +107,8 @@ var PhotoInput = React.createClass({
           label='Photo'
           labelClassName='col-xs-4'
           wrapperClassName='col-xs-8'
-          accept="image/*"/>
+          accept="image/*"
+          onChange={this.handleFileSelect}/>
           );
     }
   }
