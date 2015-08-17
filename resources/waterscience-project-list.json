@@ -1,0 +1,34 @@
+[
+  {
+   "id": "1185",
+   "name": "Water SCIENCE Phosphate"
+  },
+  {
+    "id": "862",
+    "name": "Water SCIENCE Turbidity"
+  },
+  {
+    "id": "866",
+    "name": "Water SCIENCE Dissolved Oxygen (DO)"
+  },
+  {
+    "id": "864",
+    "name": "Water SCIENCE Temperature Difference"
+  },
+  {
+    "id": "863",
+    "name": "Water SCIENCE Nitrate"
+  },
+  {
+    "id": "919",
+    "name": "Water SCIENCE BOD Dissolved Oxygen"
+  },
+  {
+    "id": "867",
+    "name": "Water SCIENCE pH"
+  },
+  {
+    "id": "868",
+    "name": "Water SCIENCE Dissolved Oxygen (DO) and pH"
+  }
+]
