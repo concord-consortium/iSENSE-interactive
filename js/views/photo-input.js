@@ -84,8 +84,8 @@ var PhotoInput = React.createClass({
         <Input
           type='file'
           label='Photo'
-          labelClassName='col-xs-2'
-          wrapperClassName='col-xs-10'
+          labelClassName='col-xs-4'
+          wrapperClassName='col-xs-8'
           accept="image/*"/>
           );
     }

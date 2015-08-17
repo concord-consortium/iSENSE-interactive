@@ -100,10 +100,10 @@ var ProjectFormField = React.createClass({
       <Input
         type="text"
         label={label}
-        labelClassName='col-xs-2'
-        wrapperClassName='col-xs-10'
+        labelClassName='col-xs-4'
+        wrapperClassName='col-xs-8'
         value={this.props.value}
-        onChange={this.hangleChange}/>
+        onChange={this.handleChange}/>
     );
   }
 });
