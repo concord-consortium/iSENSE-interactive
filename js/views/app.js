@@ -25,7 +25,8 @@ var App = React.createClass({
       project: null,
       team: null,
       datasets: [],
-      activePanel: false
+      activePanel: false,
+      teamDatasetList: null
   	};
   },
 
@@ -64,6 +65,7 @@ var App = React.createClass({
     this.appState.classPeriod = newClassPeriod;
     this.appState.save();
   	this.setState({classPeriod: newClassPeriod, activePanel: false});
+    this.updateTeamDatasetList();
   },
 
   handleClassPeriodAdd: function(addedClassPeriod) {
@@ -83,10 +85,25 @@ var App = React.createClass({
     this.appState.classPeriod = addedClassPeriod;
     this.appState.save();
     this.setState({classPeriod: addedClassPeriod, activePanel: false});
+    this.updateTeamDatasetList();
   },
 
   teamChangeHandler: function(newTeam) {
-  	this.setState({team: newTeam, activePanel: false});
+    // we need to use a callback here because otherwise this.state.team won't be set yet
+  	this.setState({team: newTeam, activePanel: false}, function(){
+      this.updateTeamDatasetList();
+    }.bind(this));
+  },
+
+  updateTeamDatasetList: function () {
+    if(this.appState.project == null || this.appState.classPeriod == null || this.state.team == null) {
+      return;
+    }
+
+    this.appState.project.getTeamDatasetList(this.appState.classPeriod, this.state.team,
+      function (datasetList) {
+        this.setState({teamDatasetList: datasetList});
+      }.bind(this));
   },
 
   projectChangeHandler: function(newProject) {
@@ -99,6 +116,7 @@ var App = React.createClass({
     // the app starts up.
     // in the interactive, this approach would be ok
     // newProject.load(this.projectLoadHandler);
+    this.updateTeamDatasetList();
   },
 
   handlePanelSelect: function(activeKey) {
@@ -116,7 +134,7 @@ var App = React.createClass({
   },
 
   _projectHeader: function() {
-    if(this.state.project === null){
+    if(this.state.project == null){
       return "Select a Project";
     }
 
@@ -125,9 +143,10 @@ var App = React.createClass({
      ]
 
     // enabled when this is running as an interactive
-    if(false) {
+    if(window.fromBrowser) {
+      projectHeader.push(" ");
       projectHeader.push(
-         <a target="_blank" href={this.props.project.isenseProjectLink()}>full iSENSE project
+         <a target="_blank" href={this.state.project.isenseProjectLink()}>full iSENSE project
          </a>)
     }
 
@@ -188,6 +207,7 @@ var App = React.createClass({
           datasets={this.state.datasets}
           classPeriod={this.state.classPeriod}
           team={this.state.team}
+          teamDatasetList={this.state.teamDatasetList}
           onUploadDatasets={this.handleUploadDatasets}/>
       </div>
     );
@@ -202,6 +222,9 @@ var App = React.createClass({
       // the dataset should be successfully uploaded
       // need to resave it since the status should have changed
       dataset.save();
+
+      // this should have added another one to the list
+      this.updateTeamDatasetList();
 
       // there should be a better way to do this so we only update the dataset that changed
       this.forceUpdate();

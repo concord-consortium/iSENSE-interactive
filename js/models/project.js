@@ -132,6 +132,78 @@ Project.prototype.uploadData = function(uploadInfo, callback) {
 
 };
 
+Project.prototype.getDatasets = function(callback) {
+  var oReq = new XMLHttpRequest(),
+      self = this;
+
+  oReq.onload = function () {
+    // we should check the reponse code here
+    var isenseProject = JSON.parse(this.responseText);
+
+    callback(isenseProject.dataSets);
+  };
+
+  oReq.onerror = function () {
+    callback(null);
+  }
+
+  // pass the recru true so we download all of the datasets too
+  oReq.open("get", this.server + "/api/v1/projects/" + this.id + "?recur=true", true);
+  oReq.send();
+};
+
+Project.prototype.getTeamDatasetList = function(classPeriod, team, callback) {
+    // find all the datasets for this team
+    var matchingDataSets = [];
+
+    var fieldIDs = this.fieldIDs;
+
+    // taken from dataset.js
+    // dataSet[fieldIDs.teamName] = [this.team.name];
+    // dataSet[fieldIDs.className] = [this.classPeriod.name];
+    // dataSet[fieldIDs.teacherName] = [this.classPeriod.teacherName];
+    // dataSet[fieldIDs.state] = [this.classPeriod.state];
+
+    // need to make sure the team, and classPeriod are setup
+
+    // this assumes getDatasets returns the raw isense dataset objects
+    // need to improve this for filtering purposes:
+    // teacher name should probably be [state]-[teacher name]
+    // however if a teacher wants to filter by their own activities they could also use
+    // the contributor name filter at the beginning assuming they only have a max of 7
+    // classes this should be ok
+    this.getDatasets(function(dataSets) {
+      if(dataSets === null) {
+        callback(null);
+        return;
+      }
+
+      dataSets.forEach(function(dataSet){
+        var dataPoint = dataSet.data[0];
+        if(dataPoint[fieldIDs.teamName] === team.name &&
+           dataPoint[fieldIDs.className] === classPeriod.name &&
+           dataPoint[fieldIDs.teacherName] === classPeriod.teacherName &&
+           dataPoint[fieldIDs.state] === classPeriod.state){
+          matchingDataSets.push(dataSet);
+        }
+      });
+
+      if(matchingDataSets.length === 0){
+        callback(null);
+        return;
+      }
+
+      var dataSetList = matchingDataSets.map(function(dataSet){
+        return dataSet.id;
+      }).join(",");
+      console.log("dataSetList:" + dataSetList);
+
+      callback(dataSetList);
+      return;
+    });
+  },
+
+
 Project.prototype.serialize = function(manager) {
   return {
     id: this.id,
