@@ -112,6 +112,12 @@ AppState.prototype.serialize = function(manager) {
     })
   };
 
+  // We should not save this if the project was set via a URL param
+  // but at the same time we don't want to nullify what was saved
+  // before. Perhaps the most simple approach is that we don't save
+  // the project link at all when running in the browser, so this
+  // assumes in the browser the project id will almost always be
+  // set via the URL
   if(this.project !== null){
     data.project = this.project.isenseProjectLink();
   }
