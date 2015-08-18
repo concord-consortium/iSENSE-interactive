@@ -15,53 +15,6 @@ var ClassPeriodAddForm = React.createClass({
     };
   },
 
-  mockClassPeriods: [
-    new ClassPeriod({
-      "uri": "https://itsi.portal.concord.org/classes/1",
-      "name": "Period 1",
-      "state": "MA",
-      "teachers": [
-         {
-            "id": "https://itsi.portal.concord.org/users/1",
-            "first_name": "Scott",
-            "last_name": "Cytacki"
-          }
-      ],
-      "computed label_needs to be less than 40 chars": "ma-cytacki-period1"
-    }),
-    new ClassPeriod({
-      "uri": "https://itsi.portal.concord.org/classes/2",
-      "name": "Really Long Class Name Period 2",
-      "state": "MA",
-      "teachers": [
-         {
-            "id": "https://itsi.portal.concord.org/users/2",
-            "first_name": "Jerome",
-            "last_name": "Chang"
-          }
-      ],
-      "computed label_needs to be less than 40 chars": "ma-chang-period2"
-    }),
-    new ClassPeriod({
-      "uri": "https://itsi.portal.concord.org/classes/3",
-      "name": "Period 3",
-      "state": "TX",
-      "teachers": [
-         {
-            "id": "https://itsi.portal.concord.org/users/3",
-            "first_name": "Allison",
-            "last_name": "Smith"
-          }
-      ],
-    })
-  ],
-
-  classFound: function () {
-    this.setState({
-      foundClassPeriod: this.mockClassPeriods[1]
-    });
-  },
-
   findClassHandler: function (e) {
   	e.preventDefault();
     this.setState({ loadingClassInfo: true, errorLoadingClassInfo: null, foundClassPeriod: null});
@@ -97,7 +50,8 @@ var ClassPeriodAddForm = React.createClass({
     // need to URL enccode this
     var encodedClassword = encodeURIComponent(this.state.classword);
     oReq.open("get",
-      'https://waterscience-isense.concord.org/classes/info?class_word=' + encodedClassword, 
+      'https://waterscience-isense.concord.org/classes/info?class_word=' + encodedClassword,
+      // 'https://itsi.portal.concord.org/portal/classes/info?class_word=' + encodedClassword,
       true);
     oReq.send();
 

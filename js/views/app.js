@@ -86,6 +86,19 @@ var App = React.createClass({
     this.appState.save();
     this.setState({classPeriod: addedClassPeriod, activePanel: false});
     this.updateTeamDatasetList();
+
+    // send this classperiod info to isense-key-maker, so the contributor key is ready
+    // when we need it
+    // We should add some kind of info so the user knows they can go offline
+    // there is another case to handle: when a new project is added,
+    // so really this should coordinate with the key-maker so it knows which projects
+    // have had the key set. And then if a new project shows up the classPeriod can
+    // make sure to register that key to.
+    addedClassPeriod.registerKeys(function(){
+      // the contributor keys have now been registered with iSENSE
+      // do something to let the user know.
+    });
+
   },
 
   teamChangeHandler: function(newTeam) {
@@ -142,13 +155,15 @@ var App = React.createClass({
        "Project: " + this.state.project.name
      ]
 
-    // enabled when this is running as an interactive
-    if(window.fromBrowser) {
-      projectHeader.push(" ");
-      projectHeader.push(
-         <a target="_blank" href={this.state.project.isenseProjectLink()}>full iSENSE project
-         </a>)
-    }
+    // I tried enabling this when running as an interactive
+    // but the panel header click handling prevented users from clicking on it
+    // the same link can be found under the 'Visualize Datasets' tab
+    // if(window.fromBrowser) {
+    //   projectHeader.push(" ");
+    //   projectHeader.push(
+    //      <a target="_blank" href={this.state.project.isenseProjectLink()}>full iSENSE project
+    //      </a>)
+    // }
 
     return projectHeader;
   },

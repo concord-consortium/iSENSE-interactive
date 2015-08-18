@@ -43,7 +43,6 @@ ClassPeriod.prototype.isenseLabel = function() {
         className = shortenString(className, 36-teacherLastName.length);
       }
     }
-    // need to shorten one or both of the strings not sure the best approach here
   }
   label = this.state + '-' + teacherLastName + '-' + className;
   return label.toLowerCase();
@@ -60,6 +59,31 @@ ClassPeriod.prototype.contributorKey = function() {
   key = key.replace('https://', '');
   return key;
 };
+
+ClassPeriod.prototype.registerKeys = function(callback) {
+  var oReq = new XMLHttpRequest(),
+      self = this;
+
+  oReq.onload = function () {
+    // We should save which projects the key was added too
+    callback(null);
+  };
+
+  oReq.onerror = function (error) {
+    callback(error);
+  }
+
+  // oReq.open("POST", "http://localhost:9292/", true);
+  // oReq.open("POST", "https://isense-key-maker.herokuapp.com/isense-keys");
+  oReq.open("POST", "https://waterscience-isense.concord.org/isense-keys");
+  oReq.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+  // this might take a while
+  oReq.send(JSON.stringify({
+    name: this.isenseLabel(),
+    key:  this.contributorKey()
+  }));
+}
 
 ClassPeriod.prototype.summaryText = function() {
   return this.name + ", " +
