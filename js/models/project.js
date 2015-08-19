@@ -37,6 +37,7 @@ Project.prototype.load = function (callback){
 
   oReq.onerror = function () {
     self.loading = false;
+    callback();
   }
 
   // we should only pass the recur param if we need all of the datasets
