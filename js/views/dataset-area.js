@@ -14,7 +14,8 @@ var DatasetArea = React.createClass({
         <ProjectDataEntry
           project={this.props.project}
           classPeriod={this.props.classPeriod}
-          team={this.props.team}/>
+          team={this.props.team}
+          progress={this.props.submissionProgress}/>
       </TabPane>;
     var listDatasetsTab =
       <TabPane eventKey='list' tab='List Datasets'>

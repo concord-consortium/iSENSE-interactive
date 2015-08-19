@@ -26,7 +26,8 @@ var App = React.createClass({
       team: null,
       datasets: [],
       activePanel: false,
-      teamDatasetList: null
+      teamDatasetList: null,
+      submissionProgress: null
   	};
   },
 
@@ -191,39 +192,42 @@ var App = React.createClass({
     return (
       <div>
         <Navbar brand='Water SCIENCE Monitor' inverse/>
-        <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
-          <Panel
-              eventKey='classPeriod'
-              header={this._classPeriodHeader()}>
-            <ClassPeriodChooser
-              classPeriod={this.state.classPeriod}
-              classPeriods={this.state.classPeriods}
-              onClassPeriodChoosen={this.handleClassPeriodChange}
-              onClassPeriodAdded={this.handleClassPeriodAdd}/>
-          </Panel>
-          <Panel
-              eventKey='project'
-              header={this._projectHeader()}>
-            <ProjectChooser
-              currentProject={this.state.project}
-              projects={this.state.projects}
-              onProjectChoosen={this.projectChangeHandler}/>
-          </Panel>
-          <Panel
-              eventKey='team'
-              header={this._teamHeader()}>
-            <TeamForm
-              team={this.state.team}
-              onChange={this.teamChangeHandler}/>
-          </Panel>
-        </PanelGroup>
-        <DatasetArea
-          project={this.state.project}
-          datasets={this.state.datasets}
-          classPeriod={this.state.classPeriod}
-          team={this.state.team}
-          teamDatasetList={this.state.teamDatasetList}
-          onUploadDatasets={this.handleUploadDatasets}/>
+        <div id='content'>
+          <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
+            <Panel
+                eventKey='classPeriod'
+                header={this._classPeriodHeader()}>
+              <ClassPeriodChooser
+                classPeriod={this.state.classPeriod}
+                classPeriods={this.state.classPeriods}
+                onClassPeriodChoosen={this.handleClassPeriodChange}
+                onClassPeriodAdded={this.handleClassPeriodAdd}/>
+            </Panel>
+            <Panel
+                eventKey='project'
+                header={this._projectHeader()}>
+              <ProjectChooser
+                currentProject={this.state.project}
+                projects={this.state.projects}
+                onProjectChoosen={this.projectChangeHandler}/>
+            </Panel>
+            <Panel
+                eventKey='team'
+                header={this._teamHeader()}>
+              <TeamForm
+                team={this.state.team}
+                onChange={this.teamChangeHandler}/>
+            </Panel>
+          </PanelGroup>
+          <DatasetArea
+            project={this.state.project}
+            datasets={this.state.datasets}
+            classPeriod={this.state.classPeriod}
+            team={this.state.team}
+            submissionProgress={this.state.submissionProgress}
+            teamDatasetList={this.state.teamDatasetList}
+            onUploadDatasets={this.handleUploadDatasets}/>
+        </div>
       </div>
     );
   },
@@ -233,17 +237,25 @@ var App = React.createClass({
            this.state.classPeriod, this.state.team, data.data, data.photo),
         newDatasets = [];
 
-    dataset.submit(function (uploadedDataset, result){
-      // the dataset should be successfully uploaded
-      // need to resave it since the status should have changed
-      dataset.save();
+    this.setState({submissionProgress: 20});
+    dataset.submit(true,
+      function (progress) {
+        this.setState({submissionProgress: progress});
+      }.bind(this),
+      function (uploadedDataset, result){
+        // we are done with submitting so hide the progress bar again
+        this.setState({submissionProgress: null});
 
-      // this should have added another one to the list
-      this.updateTeamDatasetList();
+        // the dataset should be successfully uploaded
+        // need to resave it since the status should have changed
+        dataset.save();
 
-      // there should be a better way to do this so we only update the dataset that changed
-      this.forceUpdate();
-    }.bind(this));
+        // this should have added another one to the list
+        this.updateTeamDatasetList();
+
+        // there should be a better way to do this so we only update the dataset that changed
+        this.forceUpdate();
+      }.bind(this));
 
     this.appState.addDataset(dataset);
     this.setState({datasets: this.appState.datasets});

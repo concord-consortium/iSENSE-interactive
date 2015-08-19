@@ -84,7 +84,12 @@ AppState.prototype.addClassPeriod = function(classPeriod) {
 AppState.prototype.uploadDatasets = function(callback) {
   this.datasets.forEach(function(dataset){
     if(dataset.needsUploading()){
-      dataset.submit(function(){
+      // passing false here so the location is not found
+      // these datasets could be uploaded in a much different place than where they
+      // were initially submited
+      dataset.submit(false,
+        function(progress){},
+        function(){
         // need to resave the dataset
         dataset.save();
         // need to change the state on the app incase the user has the datasets tab open

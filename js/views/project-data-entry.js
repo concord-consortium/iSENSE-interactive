@@ -1,6 +1,8 @@
 var React = require('react');
-var Button = require('react-bootstrap/lib/button')
-var Input = require('react-bootstrap/lib/input')
+var Button = require('react-bootstrap/lib/button');
+var Input = require('react-bootstrap/lib/input');
+var ProgressBar = require('react-bootstrap/lib/progressbar');
+var ButtonToolbar = require('react-bootstrap/lib/buttontoolbar');
 
 var PhotoInput = require('./photo-input');
 
@@ -67,12 +69,21 @@ var ProjectDataEntry = React.createClass({
       );
     }.bind(this));
 
+    var progressBar = false;
+    // 0 or null mean no progress
+    if(this.props.progress) {
+      progressBar = <ProgressBar active={this.props.progress !== 100} now={this.props.progress} style={{marginBottom: '0px', marginTop: '6px'}}/>
+    }
+
     // need to add a field for the image
     return (
       <form className="form-horizontal">
         {rows}
         <PhotoInput onPhotoSelected={this.handlePhotoSelected}/>
-        <Button onClick={this.submitHandler}>Submit Data</Button>
+        <ButtonToolbar>
+          <Button onClick={this.submitHandler}>Submit Data</Button>
+          {progressBar}
+        </ButtonToolbar>
       </form>
     );
   }

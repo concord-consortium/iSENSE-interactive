@@ -13,9 +13,7 @@ var Dataset = function(project, classPeriod, team, data, photo){
   // could be created, uploading, uploaded, failed
   this.status = "created";
   this.photo = photo;
-  // if there is no photo we mark the status as uploaded to simplify
-  // logic later that is looking to see if the photo needs to be uploaded
-  this.photoStatus = (photo === null) ? "uploaded" : "created";
+  this.photoStatus = (photo === null) ? "no-photo" : "created";
   // this is the id of the dataset stored in isense
   this.isenseID = "";
   // need to give this dataset a unique URI
@@ -25,7 +23,7 @@ var Dataset = function(project, classPeriod, team, data, photo){
 Dataset.prototype._getLocation = function(callback) {
   var self = this;
 
-  if (!navigator.geolocation){
+  if (!("geolocation" in navigator)){
     callback();
     return;
   }
@@ -36,12 +34,16 @@ Dataset.prototype._getLocation = function(callback) {
     callback();
   };
 
-  function error() {
+  function error(positionError) {
     console.log("Unable to retrieve your location");
     callback();
   };
 
-  navigator.geolocation.getCurrentPosition(success, error);
+  var geoOptions = {
+    timeout: 5000
+  }
+
+  navigator.geolocation.getCurrentPosition(success, error, geoOptions);
 }
 
 Dataset.prototype._uploadPhoto = function(callback) {
@@ -119,7 +121,7 @@ Dataset.prototype._uploadPhoto = function(callback) {
   }
 };
 
-Dataset.prototype._upload = function(callback) {
+Dataset.prototype._upload = function(progressCallback, callback) {
   // data contains the data for the fields defined in the project
   // this requires the contributor key to have been created in iSENSE first
   // Get the variables that the user entered in the HTML portion of the app.
@@ -152,6 +154,7 @@ Dataset.prototype._upload = function(callback) {
     contributorName : this.team.name,
     data            : dataSet
   }, function (isenseResult){
+    progressCallback(70);
     this.isenseID = isenseResult.id;
     this.status = "uploaded";
 
@@ -186,28 +189,36 @@ Dataset.prototype.needsUploading = function() {
   return (this.status !== "uploaded" || (this.photo != null && this.photoStatus !== "uploaded"));
 };
 
-Dataset.prototype.submit = function(callback) {
+// Progress numbers
+// 20 starting
+// 40 after getting location
+// 70 after sending data to isense
+
+Dataset.prototype.submit = function(findLocation, progressCallback, callback) {
   if(this.status === "uploaded"){
-    if(this.photoStatus === "uploaded"){
+    if(this.photo == null || this.photoStatus === "uploaded"){
       // nothing to do here
       callback(this);
     } else {
-      // need to upload the video
-      this._upload(callback);
+      // need to upload photo
+      progressCallback(70);
+      this._uploadPhoto(callback);
     }
     return;
   }
 
-  if(this.project.hasLocation() && (this.latitude == null || this.longitude == null)){
+  if(findLocation && this.project.hasLocation() && (this.latitude == null || this.longitude == null)){
     this._getLocation(function(){
       // save after getting the location
       this.save();
-      this._upload(callback);
+      progressCallback(40);
+      this._upload(progressCallback, callback);
     }.bind(this));
   } else {
     // either the project doesn't support location
     // or the location has already been looked up
-    this._upload(callback);
+    progressCallback(40);
+    this._upload(progressCallback, callback);
   }
 };
 
