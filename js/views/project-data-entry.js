@@ -72,7 +72,10 @@ var ProjectDataEntry = React.createClass({
     var progressBar = false;
     // 0 or null mean no progress
     if(this.props.progress) {
-      progressBar = <ProgressBar active={this.props.progress !== 100} now={this.props.progress} style={{marginBottom: '0px', marginTop: '6px'}}/>
+      progressBar = <ProgressBar
+        active={this.props.progress !== 100}
+        now={this.props.progress}
+        style={{marginBottom: '0px', marginTop: '6px', marginLeft: '6px', width: '150px', float: 'left'}}/>
     }
 
     // need to add a field for the image

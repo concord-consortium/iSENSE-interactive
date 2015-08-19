@@ -3,6 +3,40 @@
   margin: 0px;
 }
 
+.tab-content {
+  margin-top: 5px;
+}
+
+.panel-group {
+  margin-bottom: 10px;
+}
+
 #content {
   margin: 10px;
+}
+
+/* this is used for the sticky footer*/
+#example, .full-page, html, body{
+  height: 100%;
+}
+
+.page-wrap {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -45px;
+}
+.page-wrap:after {
+  content: "";
+  display: block;
+}
+footer, .page-wrap:after {
+  height: 45px;
+}
+/* end of sticky footer stuff */
+
+footer {
+  border-top: 1px solid #000000;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 5px;
 }

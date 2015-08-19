@@ -12,6 +12,7 @@ var ProjectChooser = require('./project-chooser');
 var Project = require('../models/project');
 var TeamForm = require('./team-form');
 var DatasetArea = require('./dataset-area');
+var DatasetUploader = require('./dataset-uploader');
 var Dataset = require('../models/dataset');
 
 var StorageManager = require('../models/storage-manager');
@@ -190,44 +191,49 @@ var App = React.createClass({
     // see the teams that they have used before
     // but this is something that seems not critical for the first version
     return (
-      <div>
-        <Navbar brand='Water SCIENCE Monitor' inverse/>
-        <div id='content'>
-          <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
-            <Panel
-                eventKey='classPeriod'
-                header={this._classPeriodHeader()}>
-              <ClassPeriodChooser
-                classPeriod={this.state.classPeriod}
-                classPeriods={this.state.classPeriods}
-                onClassPeriodChoosen={this.handleClassPeriodChange}
-                onClassPeriodAdded={this.handleClassPeriodAdd}/>
-            </Panel>
-            <Panel
-                eventKey='project'
-                header={this._projectHeader()}>
-              <ProjectChooser
-                currentProject={this.state.project}
-                projects={this.state.projects}
-                onProjectChoosen={this.projectChangeHandler}/>
-            </Panel>
-            <Panel
-                eventKey='team'
-                header={this._teamHeader()}>
-              <TeamForm
-                team={this.state.team}
-                onChange={this.teamChangeHandler}/>
-            </Panel>
-          </PanelGroup>
-          <DatasetArea
-            project={this.state.project}
-            datasets={this.state.datasets}
-            classPeriod={this.state.classPeriod}
-            team={this.state.team}
-            submissionProgress={this.state.submissionProgress}
-            teamDatasetList={this.state.teamDatasetList}
-            onUploadDatasets={this.handleUploadDatasets}/>
+      <div className="full-page">
+        <div className="page-wrap">
+          <Navbar brand='Water SCIENCE Monitor' inverse/>
+          <div id='content'>
+            <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
+              <Panel
+                  eventKey='classPeriod'
+                  header={this._classPeriodHeader()}>
+                <ClassPeriodChooser
+                  classPeriod={this.state.classPeriod}
+                  classPeriods={this.state.classPeriods}
+                  onClassPeriodChoosen={this.handleClassPeriodChange}
+                  onClassPeriodAdded={this.handleClassPeriodAdd}/>
+              </Panel>
+              <Panel
+                  eventKey='project'
+                  header={this._projectHeader()}>
+                <ProjectChooser
+                  currentProject={this.state.project}
+                  projects={this.state.projects}
+                  onProjectChoosen={this.projectChangeHandler}/>
+              </Panel>
+              <Panel
+                  eventKey='team'
+                  header={this._teamHeader()}>
+                <TeamForm
+                  team={this.state.team}
+                  onChange={this.teamChangeHandler}/>
+              </Panel>
+            </PanelGroup>
+            <DatasetArea
+              project={this.state.project}
+              datasets={this.state.datasets}
+              classPeriod={this.state.classPeriod}
+              team={this.state.team}
+              submissionProgress={this.state.submissionProgress}
+              teamDatasetList={this.state.teamDatasetList}
+              onUploadDatasets={this.handleUploadDatasets}/>
+          </div>
         </div>
+        <footer className="site-footer">
+          <DatasetUploader datasets={this.state.datasets} onUploadDatasets={this.handleUploadDatasets}/>
+        </footer>
       </div>
     );
   },
