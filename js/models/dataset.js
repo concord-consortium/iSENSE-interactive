@@ -13,7 +13,7 @@ var Dataset = function(project, classPeriod, team, data, photo){
   // could be created, uploading, uploaded, failed
   this.status = "created";
   this.photo = photo;
-  this.photoStatus = (photo === null) ? "no-photo" : "created";
+  this.photoStatus = (photo === null) ? "none" : "created";
   // this is the id of the dataset stored in isense
   this.isenseID = "";
   // need to give this dataset a unique URI

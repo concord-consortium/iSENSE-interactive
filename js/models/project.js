@@ -131,7 +131,7 @@ Project.prototype.uploadData = function(uploadInfo, callback) {
     xhr.onerror = function () {
       // definitely not following nodejs callback convenstions here
       callback(null);
-    }
+    };
 
 };
 

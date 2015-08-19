@@ -1,4 +1,5 @@
 var React = require('react');
+var Table = require('react-bootstrap/lib/table');
 
 var DatasetList = React.createClass({
   render: function() {
@@ -10,7 +11,7 @@ var DatasetList = React.createClass({
   		if(dataset.project === this.props.project &&
   		   dataset.classPeriod === this.props.classPeriod) {
   			datasetRows.push(
-  				<DatasetListItem dataset={dataset}/>);
+  				<DatasetListItem project={this.props.project} dataset={dataset}/>);
   		}
   	}.bind(this));
 
@@ -20,25 +21,54 @@ var DatasetList = React.createClass({
       );
     }
 
+    var headers = [];
+
+    headers.push(<th>Team</th>);
+
+    this.props.project.dataFields.forEach(function(field){
+      var unitString = "";
+
+      if(field.unit) {
+        unitString = "(" + field.unit + ")";
+      }
+
+      headers.push(<th>{field.name}<br/>{unitString}</th>);
+    });
+    headers.push(<th>Status</th>);
+    headers.push(<th>Photo</th>);
+
     return (
-      <div>
-        <ul>
+      <Table bordered={false} responsive>
+        <thead>
+          {headers}
+        </thead>
+        <tbody>
           {datasetRows}
-        </ul>
-      </div>
+        </tbody>
+      </Table>
     );
   }
 });
 
 var DatasetListItem = React.createClass({
+
   render: function() {
+    var dataFields = [];
+    this.props.project.dataFields.forEach(function(field){
+      if(field.id in this.props.dataset.data){
+        dataFields.push(<td>{this.props.dataset.data[field.id]}</td>);
+      } else {
+        dataFields.push(<td></td>);
+      }
+    }.bind(this));
+
   	return (
-  		<div>
-  		  Team: {this.props.dataset.team.name},{" "}
-  		  Data: {JSON.stringify(this.props.dataset.data)},{" "}
-  		  Status: {this.props.dataset.status},{" "}
-        PhotoStatus: {this.props.dataset.photoStatus}
-  		</div>
+  		<tr>
+  		  <td>{this.props.dataset.team.name}</td>
+        {dataFields}
+        <td>{this.props.dataset.status}</td>
+        <td>{this.props.dataset.photoStatus}</td>
+  		</tr>
   		);
   }
 });
