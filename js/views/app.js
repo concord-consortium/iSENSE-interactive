@@ -47,11 +47,23 @@ var App = React.createClass({
       classPeriod: this.appState.classPeriod
     });
 
-    this.appState.updateProjects(function(error){
-      // this will be called before each individual projects is loaded
-      // but at least the list of projects will be available
-      this.setState({projects: this.appState.projects});
-      this.appState.save();
+    if(this.appState.team){
+      this.setState({team: this.appState.team})
+    }
+
+    this.appState.updateProjects(function(error, updatedProject){
+      if(updatedProject) {
+        // this is called each time a project is loaded in
+        // if it is the currently selected project then we need to refresh the display
+        if(updatedProject === this.appState.project){
+          this.setState({project: updatedProject});
+        }
+      } else {
+        // this will be called before each individual project is loaded
+        // or it will be called if there was an errro loading the projects
+        this.setState({projects: this.appState.projects});
+        this.appState.save();
+      }
     }.bind(this));
   },
 
@@ -105,6 +117,8 @@ var App = React.createClass({
 
   teamChangeHandler: function(newTeam) {
     // we need to use a callback here because otherwise this.state.team won't be set yet
+    this.appState.team = newTeam;
+    this.appState.save();
   	this.setState({team: newTeam, activePanel: false}, function(){
       this.updateTeamDatasetList();
     }.bind(this));
@@ -182,7 +196,7 @@ var App = React.createClass({
     if(this.state.team === null){
       return "Enter Your Team";
     } else {
-      return "Team: " + this.state.team.name;
+      return "Team: " + this.state.team;
     }
   },
 

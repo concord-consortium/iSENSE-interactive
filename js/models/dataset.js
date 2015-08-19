@@ -66,7 +66,7 @@ Dataset.prototype._uploadPhoto = function(callback) {
         options.mimeType = "image/jpeg";
         options.params = {
           "contribution_key": this.classPeriod.contributorKey(),
-          "contributor_name": this.team.name,
+          "contributor_name": this.team,
           "type": "data_set",
           "id": "" + this.isenseID
         }
@@ -100,7 +100,7 @@ Dataset.prototype._uploadPhoto = function(callback) {
     // Add the file to the request.
     formData.append('upload', this.photo, this.photo.name);
     formData.append('contribution_key', this.classPeriod.contributorKey());
-    formData.append('contributor_name', this.team.name);
+    formData.append('contributor_name', this.team);
     formData.append('type', 'data_set');
     formData.append('id', this.isenseID);
 
@@ -130,7 +130,7 @@ Dataset.prototype._upload = function(progressCallback, callback) {
       fieldIDs = this.project.fieldIDs;
 
   // TODO store the team name as teamName - className to make filtering easier for teachers
-  dataSet[fieldIDs.teamName] = [this.team.name];
+  dataSet[fieldIDs.teamName] = [this.team];
   dataSet[fieldIDs.className] = [this.classPeriod.name];
   dataSet[fieldIDs.teacherName] = [this.classPeriod.teacherName];
   dataSet[fieldIDs.state] = [this.classPeriod.state];
@@ -151,7 +151,7 @@ Dataset.prototype._upload = function(progressCallback, callback) {
 
   this.project.uploadData({
     contributionKey : this.classPeriod.contributorKey(),
-    contributorName : this.team.name,
+    contributorName : this.team,
     data            : dataSet
   }, function (isenseResult){
     progressCallback(70);
@@ -264,7 +264,7 @@ Dataset.prototype.serialize = function(manager){
     uri: this.uri,
     project: this.project.isenseProjectLink(),
     classPeriod: this.classPeriod.uri,
-    team: this.team.name,
+    team: this.team,
     data: this.data,
     latitude: this.latitude,
     longitude: this.longitude,
@@ -280,7 +280,7 @@ Dataset.deserialize = function(manager, data){
       classPeriod = manager.findRequired("ClassPeriod", data.classPeriod),
       dataset;
 
-  dataset = new Dataset(project, classPeriod, {name: data.team}, data.data);
+  dataset = new Dataset(project, classPeriod, data.team, data.data);
   dataset.latitude = data.latitude;
   dataset.longitude = data.longitude;
   dataset.status = data.status;

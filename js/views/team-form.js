@@ -5,16 +5,16 @@ var Input = require('react-bootstrap/lib/input');
 var TeamForm = React.createClass({
   getInitialState: function() {
   	return {
-      name: ""
+      team: ""
     };
   },
 
   handleChange: function(e) {
-  	this.setState({name: e.target.value});
+  	this.setState({team: e.target.value});
   },
 
   handleSet: function(e) {
-  	this.props.onChange({name: this.state.name});
+  	this.props.onChange(this.state.team);
   },
 
   render: function() {

@@ -64,7 +64,7 @@ var DatasetListItem = React.createClass({
 
   	return (
   		<tr>
-  		  <td>{this.props.dataset.team.name}</td>
+  		  <td>{this.props.dataset.team}</td>
         {dataFields}
         <td>{this.props.dataset.status}</td>
         <td>{this.props.dataset.photoStatus}</td>

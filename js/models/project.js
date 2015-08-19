@@ -97,7 +97,7 @@ Project.prototype.hasLocation = function() {
 Project.prototype.uploadData = function(uploadInfo, callback) {
  // uploadData({
  //      contributionKey : this.state.classPeriod.isenseLabel(),
- //      contributorName : this.state.team.name,
+ //      contributorName : this.state.team,
  //      data            : dataSet
  	// Make the URL links.
 	var API_URL = this.server + '/api/v1/projects/' + this.id + '/jsonDataUpload';
@@ -162,7 +162,7 @@ Project.prototype.getTeamDatasetList = function(classPeriod, team, callback) {
     var fieldIDs = this.fieldIDs;
 
     // taken from dataset.js
-    // dataSet[fieldIDs.teamName] = [this.team.name];
+    // dataSet[fieldIDs.teamName] = [this.team];
     // dataSet[fieldIDs.className] = [this.classPeriod.name];
     // dataSet[fieldIDs.teacherName] = [this.classPeriod.teacherName];
     // dataSet[fieldIDs.state] = [this.classPeriod.state];
@@ -183,7 +183,7 @@ Project.prototype.getTeamDatasetList = function(classPeriod, team, callback) {
 
       dataSets.forEach(function(dataSet){
         var dataPoint = dataSet.data[0];
-        if(dataPoint[fieldIDs.teamName] === team.name &&
+        if(dataPoint[fieldIDs.teamName] === team &&
            dataPoint[fieldIDs.className] === classPeriod.name &&
            dataPoint[fieldIDs.teacherName] === classPeriod.teacherName &&
            dataPoint[fieldIDs.state] === classPeriod.state){

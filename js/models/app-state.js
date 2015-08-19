@@ -8,6 +8,7 @@ var AppState = function(){
 
   this.project = null;
   this.classPeriod = null;
+  this.team = null;
 };
 
 AppState.prototype.updateProjects = function(callback){
@@ -44,7 +45,8 @@ AppState.prototype.updateProjects = function(callback){
     // now load each of the projects and save them in the state
     self.projects.forEach(function(project) {
       project.load(function(){
-      	StorageManager.save(project, "Project", project.isenseProjectLink())
+      	StorageManager.save(project, "Project", project.isenseProjectLink());
+        callback(false, project);
       });
     });
 
@@ -124,12 +126,16 @@ AppState.prototype.serialize = function(manager) {
   // the project link at all when running in the browser, so this
   // assumes in the browser the project id will almost always be
   // set via the URL
-  if(this.project !== null){
+  if(this.project != null){
     data.project = this.project.isenseProjectLink();
   }
 
-  if(this.classPeriod !== null){
+  if(this.classPeriod != null){
     data.classPeriod = this.classPeriod.uri;
+  }
+
+  if(this.team != null) {
+    data.team = this.team;
   }
 
   return data;
@@ -152,6 +158,10 @@ AppState.deserialize = function(manager, data) {
 
   if('classPeriod' in data){
     appState.classPeriod = manager.findRequired("ClassPeriod", data.classPeriod);
+  }
+
+  if('team' in data){
+    appState.team = data.team;
   }
 
   return appState;
