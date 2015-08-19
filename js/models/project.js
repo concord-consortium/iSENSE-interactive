@@ -125,10 +125,13 @@ Project.prototype.uploadData = function(uploadInfo, callback) {
       console.log("finished iSense post");
       console.log(datasetResult);
 
-	  if (typeof callback !== 'undefined'){
-	    callback(datasetResult);
-	  }
+  	  callback(datasetResult);
     };
+
+    xhr.onerror = function () {
+      // definitely not following nodejs callback convenstions here
+      callback(null);
+    }
 
 };
 

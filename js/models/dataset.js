@@ -155,6 +155,15 @@ Dataset.prototype._upload = function(progressCallback, callback) {
     data            : dataSet
   }, function (isenseResult){
     progressCallback(70);
+    if(isenseResult == null){
+      // some error happened while uploading data, it could just be that the device
+      // was offline, so for now we set the status to saved
+      this.status = "saved";
+      this.save();
+      callback(this, null);
+      return;
+    }
+
     this.isenseID = isenseResult.id;
     this.status = "uploaded";
 

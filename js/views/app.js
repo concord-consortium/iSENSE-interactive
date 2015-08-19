@@ -249,6 +249,9 @@ var App = React.createClass({
         this.setState({submissionProgress: progress});
       }.bind(this),
       function (uploadedDataset, result){
+        // result will be null if an error happened while uploading to iSENSE
+        // this could just be that the device is offline
+
         // we are done with submitting so hide the progress bar again
         this.setState({submissionProgress: null});
 
