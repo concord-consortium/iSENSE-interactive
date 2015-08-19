@@ -101,7 +101,9 @@ var ProjectFormField = React.createClass({
   render: function() {
     var unitString = "",
         field = this.props.field,
-        label;
+        label,
+        inputType = "text",
+        inputChildren = false;
 
     if(field.unit) {
       unitString = " (" + field.unit + ")";
@@ -109,15 +111,32 @@ var ProjectFormField = React.createClass({
 
     label = field.name + " " + unitString;
 
+    // this is a number field
+    if(field.type == 2){
+      inputType = "number";
+    }
+
+    if(field.restrictions && field.restrictions.length > 0){
+      inputType = "select";
+      inputChildren = [];
+      field.restrictions.forEach(function(option){
+        inputChildren.push(
+          <option value={option}>{option}</option>
+        );
+      });
+    }
+
     // TODO add support for contratined text fields so they show a select box
     return (
       <Input
-        type="text"
+        type={inputType}
         label={label}
         labelClassName='col-xs-4'
         wrapperClassName='col-xs-8'
         value={this.props.value}
-        onChange={this.handleChange}/>
+        onChange={this.handleChange}>
+        {inputChildren}
+      </Input>
     );
   }
 });

@@ -60,6 +60,7 @@ AppState.prototype.updateProjects = function(callback){
   };
 
   oReq.open("get", 'https://s3.amazonaws.com/static.concord.org/WaterSCIENCE/isense-project-list.json', true);
+  // oReq.open("get", 'resources/waterscience-project-list.json', true);
   oReq.send();
 
   // TODO: if this has succeded or timedout we need to call the callback
