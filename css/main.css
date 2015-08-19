@@ -44,3 +44,8 @@ footer {
 .table > thead > tr > th {
   vertical-align: top;
 }
+
+.help-block {
+  margin-left: 20px;
+  font-size: small;
+}

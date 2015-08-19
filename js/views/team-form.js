@@ -27,6 +27,7 @@ var TeamForm = React.createClass({
         value={this.state.name}
         buttonAfter={setTeamButton}
         onChange={this.handleChange}
+        help={["No team? Enter ", <i>demo</i>, "."]}
   	  />
     );
   }

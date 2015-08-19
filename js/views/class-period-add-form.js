@@ -111,6 +111,7 @@ var ClassPeriodAddForm = React.createClass({
             value={this.state.classword}
             buttonAfter={findClassButton}
             onChange={this.handleChange}
+            help={["No class? Enter ", <i>demo</i>, "."]}
   	  	  />
   	  	</form>
         <Input
