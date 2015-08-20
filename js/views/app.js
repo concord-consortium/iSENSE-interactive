@@ -200,6 +200,24 @@ var App = React.createClass({
     }
   },
 
+  handleClassPeriodPanelClick: function(event){
+    if(event.target.className === "panel-title") {
+      this.handlePanelSelect('classPeriod');
+    }
+  },
+
+  handleProjectPanelClick: function(event){
+    if(event.target.className === "panel-title") {
+      this.handlePanelSelect('project');
+    }
+  },
+
+  handleTeamPanelClick: function(event){
+    if(event.target.className === "panel-title") {
+      this.handlePanelSelect('team');
+    }
+  },
+
   render: function() {
     // We might also want to keep a list of teams to make it easier for teams to
     // see the teams that they have used before
@@ -212,7 +230,8 @@ var App = React.createClass({
             <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
               <Panel
                   eventKey='classPeriod'
-                  header={this._classPeriodHeader()}>
+                  header={this._classPeriodHeader()}
+                  onClick={this.handleClassPeriodPanelClick}>
                 <ClassPeriodChooser
                   classPeriod={this.state.classPeriod}
                   classPeriods={this.state.classPeriods}
@@ -221,7 +240,8 @@ var App = React.createClass({
               </Panel>
               <Panel
                   eventKey='project'
-                  header={this._projectHeader()}>
+                  header={this._projectHeader()}
+                  onClick={this.handleProjectPanelClick}>
                 <ProjectChooser
                   currentProject={this.state.project}
                   projects={this.state.projects}
@@ -229,7 +249,8 @@ var App = React.createClass({
               </Panel>
               <Panel
                   eventKey='team'
-                  header={this._teamHeader()}>
+                  header={this._teamHeader()}
+                  onClick={this.handleTeamPanelClick}>
                 <TeamForm
                   team={this.state.team}
                   onChange={this.teamChangeHandler}/>
