@@ -18,6 +18,7 @@
 /* this is used for the sticky footer*/
 #example, .full-page, html, body{
   height: 100%;
+  margin: 0px;
 }
 
 .page-wrap {
@@ -48,4 +49,47 @@ footer {
 .help-block {
   margin-left: 20px;
   font-size: small;
+}
+
+/* by default this was -15px,
+  the form elements have a padding of 15px, so the negative margin on the group
+  was to prevent this padding from adding to the group dimensions, however this
+  also means there is this extra 'padding' sticking out over the edge of the box.
+  The margins of the main content is only 10px, so this meant there was 5px of
+  padding going beyond the screen. And that caused iOS to add a horizontal
+  scrollbar.  So -10px will not stick beyond the edge, and it will give more room
+  to the form on narrow screens like iPhones.
+  */
+.form-horizontal .form-group{
+  margin-right: -10px;
+  margin-left: -10px;
+  margin-bottom: 10px;
+}
+
+/* in this app the labels are inside of form-groups which have their own margin */
+label {
+  margin-bottom: 0px;
+  line-height: 1.2;
+}
+
+/* by default form-control-static adds extra padding that is designed for text
+  but for a control like a button or input field there shouldn't be extra padding */
+.photo-button .form-control-static {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+
+span.field-unit {
+  font-weight: normal;
+}
+
+#title-bar {
+  background-color: #222;
+  position: relative;
+  min-height: 40px;
+  /* hack to get vertical center */
+  line-height: 40px;
+  color: #fff;
+  text-align: center;
+  font-size: larger;
 }

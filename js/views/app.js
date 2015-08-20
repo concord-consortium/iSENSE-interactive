@@ -225,7 +225,7 @@ var App = React.createClass({
     return (
       <div className="full-page">
         <div className="page-wrap">
-          <Navbar brand='Water SCIENCE Monitor' inverse/>
+          <div id="title-bar">Water SCIENCE Monitor</div>
           <div id='content'>
             <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
               <Panel

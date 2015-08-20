@@ -70,7 +70,7 @@ var ProjectDataEntry = React.createClass({
     }.bind(this));
 
     var progressBar = false;
-    // 0 or null mean no progress
+    // 0 or null means no progress
     if(this.props.progress) {
       progressBar = <ProgressBar
         active={this.props.progress !== 100}
@@ -78,7 +78,6 @@ var ProjectDataEntry = React.createClass({
         style={{marginBottom: '0px', marginTop: '6px', marginLeft: '6px', width: '150px', float: 'left'}}/>
     }
 
-    // need to add a field for the image
     return (
       <form className="form-horizontal">
         {rows}
@@ -99,17 +98,17 @@ var ProjectFormField = React.createClass({
   },
 
   render: function() {
-    var unitString = "",
+    var unitString = false,
         field = this.props.field,
         label,
         inputType = "text",
         inputChildren = false;
 
     if(field.unit) {
-      unitString = " (" + field.unit + ")";
+      unitString = <span className='field-unit'>{"(" + field.unit + ")"}</span>;
     }
 
-    label = field.name + " " + unitString;
+    label = <span>{field.name + " "}{unitString}</span>;
 
     // this is a number field
     if(field.type == 2){
@@ -131,8 +130,8 @@ var ProjectFormField = React.createClass({
       <Input
         type={inputType}
         label={label}
-        labelClassName='col-xs-4'
-        wrapperClassName='col-xs-8'
+        labelClassName='col-xs-6 col-sm-4'
+        wrapperClassName='col-xs-6 col-sm-4'
         value={this.props.value}
         onChange={this.handleChange}>
         {inputChildren}

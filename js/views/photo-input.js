@@ -93,8 +93,8 @@ var PhotoInput = React.createClass({
       return (
       	<FormControls.Static
       	  label="Photo"
-      	  labelClassName="col-xs-2"
-      	  wrapperClassName="col-xs-10">
+      	  labelClassName="col-xs-6 col-sm-4"
+      	  wrapperClassName="col-xs-6 col-sm-4 photo-button">
       	  <Button onClick={this.capturePhoto}>Add Photo</Button>
           { this.state.photoSelected ? " Photo Selected" : ""}
       	</FormControls.Static>
@@ -105,8 +105,8 @@ var PhotoInput = React.createClass({
         <Input
           type='file'
           label='Photo'
-          labelClassName='col-xs-4'
-          wrapperClassName='col-xs-8'
+          labelClassName='col-xs-6 col-sm-4'
+          wrapperClassName='col-xs-6 col-sm-4'
           accept="image/*"
           onChange={this.handleFileSelect}/>
           );
