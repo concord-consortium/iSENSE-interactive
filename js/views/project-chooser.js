@@ -10,6 +10,13 @@ var ProjectChooser = React.createClass({
   },
 
   render: function() {
+    if(window.projectNum && this.props.currentProject) {
+      // add a link to the full iSENSE project
+      return (
+        <a href={this.props.currentProject.isenseProjectLink()} target='_blank'>Open Full iSENSE Project</a>
+        );
+    }
+
 	  var projectList = this.props.projects.map(function(project){
 	  	return(
         <NavItem eventKey={project}>{project.name}</NavItem>
