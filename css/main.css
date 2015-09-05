@@ -1,104 +1,95 @@
-/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+.navbar-inverse {
+  border-radius: 0px;
+  margin: 0px;
+}
 
-body {
-  background: #fff;
-  color: #3f3f3f;
-  font: 80% 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  line-height: 1;
-  }
-b, strong { font-weight: bold; }
-em, i { font-style: italic; }
-form dt {
-  font-weight: bold;
-  margin: .5em 0;
-  }
-form dd {
-  margin-bottom: 1em;
-  }
-input[type=text] {
-  padding: .5em;
-  width: 200px;
-  }
-select {
-  width: 215px;
-  }
-input[type=submit] {
-  background: #ccc;
-  background-image: linear-gradient(#f6f6f6, #d7d7d7);
-  border: solid 1px #ababab;
-  border-radius: 3px;
-  min-width: 75px;
-  outline: none;
-  padding: 8px 6px;
-  text-align: center;
-  }
+.tab-content {
+  margin-top: 5px;
+}
+
+.panel-group {
+  margin-bottom: 10px;
+}
+
+#content {
+  margin: 10px;
+}
+
+/* this is used for the sticky footer*/
+#example, .full-page, html, body{
+  height: 100%;
+  margin: 0px;
+}
+
+.page-wrap {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -45px;
+}
+.page-wrap:after {
+  content: "";
+  display: block;
+}
+footer, .page-wrap:after {
+  height: 45px;
+}
+/* end of sticky footer stuff */
+
+footer {
+  border-top: 1px solid #000000;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 5px;
+}
+
+.table > thead > tr > th {
+  vertical-align: top;
+}
+
+.help-block {
+  margin-left: 20px;
+  font-size: small;
+}
+
+/* by default this was -15px,
+  the form elements have a padding of 15px, so the negative margin on the group
+  was to prevent this padding from adding to the group dimensions, however this
+  also means there is this extra 'padding' sticking out over the edge of the box.
+  The margins of the main content is only 10px, so this meant there was 5px of
+  padding going beyond the screen. And that caused iOS to add a horizontal
+  scrollbar.  So -10px will not stick beyond the edge, and it will give more room
+  to the form on narrow screens like iPhones.
+  */
+.form-horizontal .form-group{
+  margin-right: -10px;
+  margin-left: -10px;
+  margin-bottom: 10px;
+}
+
+/* in this app the labels are inside of form-groups which have their own margin */
 label {
-  padding: 1em 0;
-  white-space: nowrap;
-  }
-.edit-link {
-  color: #888;
-  position: absolute;
-  right: 1em;
-  text-decoration: none;
-  top: .75em;
-  }
-.edit-link:hover {
-  color: #00d;
-  }
-.not-active {
-  color: darkgray;
-  cursor: default;
-  pointer-events: none;
-  }
-.hidden {
-  visibility: hidden;
-  }
-.extra-links {
-  float: right;
-  font-size: .9em;
-  }
-#page-wrapper {
-  margin: 1em auto;
-  width: 90%;
-  }
-#data-set-form-div {
-  margin-top: 1em;
-  }
-#data-fields {
-  margin: 0 0 1em;
-  }
-#visualization-iframe-container {
-  margin-top: 1em;
-  padding-bottom: 3em;
+  margin-bottom: 0px;
+  line-height: 1.2;
+}
+
+/* by default form-control-static adds extra padding that is designed for text
+  but for a control like a button or input field there shouldn't be extra padding */
+.photo-button .form-control-static {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+
+span.field-unit {
+  font-weight: normal;
+}
+
+#title-bar {
+  background-color: #222;
   position: relative;
-  }
-#group-name-info, #data-set-info {
-  background: #eee;
-  border-radius: 3px;
-  color: #555;
-  display: none;
-  padding: .75em;
-  position: relative;
-  }
-#group-name-info h2, #data-set-info h2 {
-  color: #666;
-  font-weight: bold;
-  margin-bottom: .25em;
-  text-transform: uppercase;
-  }
-#group-name-info span.value, #data-set-info span.value {
-  color: #777;
-  }
-#fullsize-link {
-  background-repeat: no-repeat;
-  background-size: 90%;
-  background-image: url('../img/fullscreen.svg');
-  bottom: .25em;
-  cursor: pointer;
-  height: 2.5em;
-  position: absolute;
-  right: 0;
-  width: 2.5em;
-  }
+  min-height: 40px;
+  /* hack to get vertical center */
+  line-height: 40px;
+  color: #fff;
+  text-align: center;
+  font-size: larger;
+}

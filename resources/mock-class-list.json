@@ -1,0 +1,41 @@
+[
+	{
+		"id": "https://itsi.portal.concord.org/classes/1",
+		"name": "Period 1",
+		"state": "MA",
+		"teachers": [
+		   {
+		   	  "id": "https://itsi.portal.concord.org/users/1",
+		   	  "first_name": "Scott",
+		   	  "last_name": "Cytacki"
+		   	}
+		],
+		"_label": "ma-cytacki-period1"
+	},
+	{
+		"id": "https://itsi.portal.concord.org/classes/2",
+		"name": "Period 2",
+		"state": "MA",
+		"teachers": [
+		   {
+		   	  "id": "https://itsi.portal.concord.org/users/1",
+		   	  "first_name": "Scott",
+		   	  "last_name": "Cytacki"
+		   	}
+		],
+		"_label": "ma-cytacki-period2"
+	},
+	{
+		"id":"https://itsi.portal.concord.org/classes/3",
+		"name": "Period 1",
+		"teachers": [
+		   {
+		   	  "id": "https://itsi.portal.concord.org/users/78",
+		   	  "first_name": "Susan",
+		   	  "last_name": "Gill"
+		   	}
+		],
+		"state": "PA",
+		"_label": "pa-gill-period1"
+	},
+]
