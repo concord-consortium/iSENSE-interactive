@@ -245,7 +245,11 @@ Dataset.prototype.dataForHumans = function(){
 };
 
 Dataset.prototype.save = function() {
-  StorageManager.save(this, "Dataset", this.uri);
+  if(window.EMBEDDED){
+    // don't save the dataset when running in embedded mode
+  } else {
+    StorageManager.save(this, "Dataset", this.uri);
+  }
 }
 
 Dataset.prototype.serialize = function(manager){

@@ -1,3 +1,4 @@
+var StorageManager = require("./storage-manager");
 // Projects can either be filled out with their iSENSE data
 // or they can just contain a name and id
 var Project = function(data){
@@ -25,6 +26,9 @@ Project.prototype.load = function (callback){
     self.isenseProject = JSON.parse(this.responseText);
     self.parseFields();
     self.loading = false;
+
+    // update the name incase it is changed in iSENSE
+    self.name = self.isenseProject.name;
 
     // what we really want to do here is send a generic event (to the dispatcher)
     // so the views that care about this particular project can update if necessary
@@ -207,6 +211,13 @@ Project.prototype.getTeamDatasetList = function(classPeriod, team, callback) {
     });
   },
 
+Project.prototype.save = function() {
+  if(window.EMBEDDED){
+    // don't use local storage when running embedded
+  } else {
+    StorageManager.save(this, "Project", this.isenseProjectLink());
+  }
+}
 
 Project.prototype.serialize = function(manager) {
   return {

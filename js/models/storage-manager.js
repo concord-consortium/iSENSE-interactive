@@ -25,6 +25,11 @@ var StorageManager = {
         typeObject,
         storedObject;
 
+    if(window.EMBEDDED){
+      // disable all local storage access if we are embedded
+      return null;
+    }
+
     typeCache = this._getTypeCache(type);
 
     if(typeCache.hasOwnProperty(uri)){
@@ -66,6 +71,10 @@ var StorageManager = {
   },
 
   save: function(object, type, uri){
+    if(window.EMBEDDED){
+      throw "Local Storage Save is not supported in embedded mode";
+    }
+
   	// this should update the cache as well as putting the object in localStorage
   	var typeCache = this._getTypeCache(type),
   	    serializedObject;

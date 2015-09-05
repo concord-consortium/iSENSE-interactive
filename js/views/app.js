@@ -35,8 +35,14 @@ var App = React.createClass({
   componentDidMount: function() {
     // load the AppState instance or create a new one if it is not avialable
     StorageManager.initializeTypes();
-    this.appState = StorageManager.find('AppState', 'singleton');
-    if (this.appState === null) {
+    if(window.EMBEDDED){
+      // we don't support local storage when embedded because multiple students might
+      // use the same computer and we don't want them to see the same class and team names
+      // instead we can load the appState from containers state mechanism
+    } else {
+      this.appState = StorageManager.find('AppState', 'singleton');
+    }
+    if (this.appState == null) {
       this.appState = new AppState();
     }
 
@@ -51,20 +57,41 @@ var App = React.createClass({
       this.setState({team: this.appState.team})
     }
 
-    this.appState.updateProjects(function(error, updatedProject){
-      if(updatedProject) {
-        // this is called each time a project is loaded in
-        // if it is the currently selected project then we need to refresh the display
-        if(updatedProject === this.appState.project){
-          this.setState({project: updatedProject});
+    if(window.projectNum){
+      // the URL contained the projectNum, so we should lock the user into this project
+      // however it might be a project we don't know about so we'll need to kick off
+      // the loading of that project
+
+      // first make a basic project object based on this id
+      var urlProject = new Project({id: window.projectNum, name: "Loading Project..."});
+      this.setState({project: urlProject});
+      this.appState.project = urlProject;
+
+      // Because we aren't updating the projects and we didn't load in any projects from
+      // localStorage if the user tries to expand the project pane it will be blank
+      // effectively disabling editing of the project
+
+      urlProject.load(function(){
+        // update the state with this updated project
+        this.setState({project: urlProject});
+      }.bind(this));
+
+    } else {
+      this.appState.updateProjects(function(error, updatedProject){
+        if(updatedProject) {
+          // this is called each time a project is loaded in
+          // if it is the currently selected project then we need to refresh the display
+          if(updatedProject === this.appState.project){
+            this.setState({project: updatedProject});
+          }
+        } else {
+          // this will be called before each individual project is loaded
+          // or it will be called if there was an errro loading the projects
+          this.setState({projects: this.appState.projects});
+          this.appState.save();
         }
-      } else {
-        // this will be called before each individual project is loaded
-        // or it will be called if there was an errro loading the projects
-        this.setState({projects: this.appState.projects});
-        this.appState.save();
-      }
-    }.bind(this));
+      }.bind(this));
+    }
   },
 
   // this is currently not used because all of the projects are loaded at the beginning
@@ -225,7 +252,9 @@ var App = React.createClass({
     return (
       <div className="full-page">
         <div className="page-wrap">
-          <div id="title-bar">Water SCIENCE Monitor</div>
+          <div id="title-bar">
+            Water SCIENCE Monitor
+          </div>
           <div id='content'>
             <PanelGroup activeKey={this.state.activePanel} onSelect={this.handlePanelSelect} accordion>
               <Panel

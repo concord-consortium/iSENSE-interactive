@@ -6,6 +6,16 @@ var DatasetVisualization = require('./dataset-visualization');
 var ProjectDataEntry = require('./project-data-entry');
 
 var DatasetArea = React.createClass({
+  getInitialState: function () {
+    return {
+      key: 'add'
+    };
+  },
+
+  handleTabSelect: function (key) {
+    this.setState({key: key});
+  },
+
   render: function() {
     var addDatasetTab =
       <TabPane eventKey='add' tab='Add Dataset'>
@@ -21,24 +31,25 @@ var DatasetArea = React.createClass({
           project={this.props.project}
           datasets={this.props.datasets}
           classPeriod={this.props.classPeriod}/>
-      </TabPane>
+      </TabPane>;
     var visualizeDatasetsTab =
       <TabPane eventKey='visualize' tab='Visualize Datasets'>
         <DatasetVisualization
           project={this.props.project}
           classPeriod={this.props.classPeriod}
           team={this.props.team}
-          teamDatasetList={this.props.teamDatasetList}/>
-      </TabPane>
+          teamDatasetList={this.props.teamDatasetList}
+          visible={this.state.key === 'visualize'}/>
+      </TabPane>;
 
     var tabs = [addDatasetTab, listDatasetsTab];
-    // if we are in the browser add a new tab for visualize
-    if(window.fromBrowser){
-      tabs = [addDatasetTab, visualizeDatasetsTab, listDatasetsTab];
+    // if we are embedded then add a new tab for visualize
+    if(window.EMBEDDED){
+      tabs = [addDatasetTab, visualizeDatasetsTab];
     }
 
     return (
-      <TabbedArea defaultActiveKey='add'>
+      <TabbedArea activeKey={this.state.key} onSelect={this.handleTabSelect}>
         { tabs }
       </TabbedArea>
     );

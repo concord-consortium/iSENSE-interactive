@@ -12,6 +12,10 @@ var AppState = function(){
 };
 
 AppState.prototype.updateProjects = function(callback){
+  // fail fast
+  if(window.projectNum) {
+    throw "updateProjects should not be called when the projectNum is set";
+  }
   var oReq = new XMLHttpRequest(),
   self = this;
 
@@ -37,15 +41,15 @@ AppState.prototype.updateProjects = function(callback){
     	if(basicProject.isenseProjectLink() in existingProjectsMap){
           return existingProjectsMap[basicProject.isenseProjectLink()];
     	} else {
-          StorageManager.save(basicProject, "Project", basicProject.isenseProjectLink());
-          return basicProject;
+        basicProject.save();
+        return basicProject;
     	}
     });
 
     // now load each of the projects and save them in the state
     self.projects.forEach(function(project) {
       project.load(function(){
-      	StorageManager.save(project, "Project", project.isenseProjectLink());
+        project.save();
         callback(false, project);
       });
     });
@@ -77,8 +81,14 @@ AppState.prototype.addDataset = function(dataset) {
 AppState.prototype.addClassPeriod = function(classPeriod) {
   this.classPeriods.push(classPeriod);
 
-  // Save the dataset
-  StorageManager.save(classPeriod, 'ClassPeriod', classPeriod.uri);
+  // Save the class
+  if(window.EMBEDDED){
+    // don't save to local storage when running embedded
+    // instead we should save this into the containers global storage so other embedded interactives
+    // can access this same classPeriod info
+  } else {
+    StorageManager.save(classPeriod, 'ClassPeriod', classPeriod.uri);
+  }
 
   // save ourselves
   this.save();
@@ -104,7 +114,11 @@ AppState.prototype.uploadDatasets = function(callback) {
 }
 
 AppState.prototype.save = function() {
-  StorageManager.save(this, "AppState", 'singleton');
+  if(window.EMBEDDED){
+    // don't save to local storage when embedded
+  } else {
+    StorageManager.save(this, "AppState", 'singleton');
+  }
 };
 
 AppState.prototype.serialize = function(manager) {

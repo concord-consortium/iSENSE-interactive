@@ -18,11 +18,15 @@ var DatasetVisualization = React.createClass({
           There is no data for this team.
         </div>);
     } else {
-      var url = this.props.project.server + "/projects/" + this.props.project.id +
-                "/data_sets/" + this.props.teamDatasetList + "?embed=true";
-      return (
-        <iframe src={ url } width='100%' height='400' allowFullScreen='true'></iframe>
-        );
+      if(this.props.visible){
+        var url = this.props.project.server + "/projects/" + this.props.project.id +
+                  "/data_sets/" + this.props.teamDatasetList + "?embed=true";
+        return (
+          <iframe src={ url } width='100%' height='400' allowFullScreen='true'></iframe>
+          );
+      } else {
+        return (<div>Visualization should not be visible</div>)
+      }
     }
   }
 });
