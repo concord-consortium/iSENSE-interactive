@@ -6,14 +6,8 @@ var DatasetVisualization = require('./dataset-visualization');
 var ProjectDataEntry = require('./project-data-entry');
 
 var DatasetArea = React.createClass({
-  getInitialState: function () {
-    return {
-      key: 'add'
-    };
-  },
-
   handleTabSelect: function (key) {
-    this.setState({key: key});
+    this.props.onSelect(key);
   },
 
   render: function() {
@@ -39,7 +33,7 @@ var DatasetArea = React.createClass({
           classPeriod={this.props.classPeriod}
           team={this.props.team}
           teamDatasetList={this.props.teamDatasetList}
-          visible={this.state.key === 'visualize'}/>
+          visible={this.props.tabKey === 'visualize'}/>
       </TabPane>;
 
     var tabs = [addDatasetTab, listDatasetsTab];
@@ -49,7 +43,7 @@ var DatasetArea = React.createClass({
     }
 
     return (
-      <TabbedArea activeKey={this.state.key} onSelect={this.handleTabSelect}>
+      <TabbedArea activeKey={this.props.tabKey} onSelect={this.handleTabSelect}>
         { tabs }
       </TabbedArea>
     );

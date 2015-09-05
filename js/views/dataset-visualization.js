@@ -17,6 +17,10 @@ var DatasetVisualization = React.createClass({
         <div>
           There is no data for this team.
         </div>);
+    } else if (this.props.teamDatasetList === 'refreshing'){
+      return (
+        <div>Visualization is updating...</div>
+      );
     } else {
       if(this.props.visible){
         var url = this.props.project.server + "/projects/" + this.props.project.id +

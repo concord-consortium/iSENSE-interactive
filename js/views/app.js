@@ -28,7 +28,8 @@ var App = React.createClass({
       datasets: [],
       activePanel: false,
       teamDatasetList: null,
-      submissionProgress: null
+      submissionProgress: null,
+      datasetAreaTabKey: 'add'
   	};
   },
 
@@ -156,6 +157,9 @@ var App = React.createClass({
       return;
     }
 
+    // put the list in an 'refeshing' state so views can show a waiting spinner
+    this.setState({teamDatasetList: 'refreshing'});
+
     this.appState.project.getTeamDatasetList(this.appState.classPeriod, this.state.team,
       function (datasetList) {
         this.setState({teamDatasetList: datasetList});
@@ -245,6 +249,10 @@ var App = React.createClass({
     }
   },
 
+  handleDatasetTabSelect: function(key){
+    this.setState({datasetAreaTabKey: key});
+  },
+
   render: function() {
     // We might also want to keep a list of teams to make it easier for teams to
     // see the teams that they have used before
@@ -292,7 +300,9 @@ var App = React.createClass({
               team={this.state.team}
               submissionProgress={this.state.submissionProgress}
               teamDatasetList={this.state.teamDatasetList}
-              onUploadDatasets={this.handleUploadDatasets}/>
+              onUploadDatasets={this.handleUploadDatasets}
+              tabKey={this.state.datasetAreaTabKey}
+              onSelect={this.handleDatasetTabSelect}/>
           </div>
         </div>
         <footer className="site-footer">
@@ -318,6 +328,11 @@ var App = React.createClass({
 
         // we are done with submitting so hide the progress bar again
         this.setState({submissionProgress: null});
+
+        // change to visualize tab if EMBEDDED and successful
+        if(window.EMBEDDED && result != null){
+          this.setState({datasetAreaTabKey: 'visualize'});
+        }
 
         // the dataset should be successfully uploaded
         // need to resave it since the status should have changed
