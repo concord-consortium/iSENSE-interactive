@@ -1,9 +1,7 @@
 var React = require('react');
 
-var Navbar = require('react-bootstrap/lib/navbar');
 var PanelGroup = require('react-bootstrap/lib/panelgroup');
 var Panel = require('react-bootstrap/lib/panel');
-
 
 var AppState = require('../models/app-state');
 var ClassPeriodChooser = require('./class-period-chooser');
@@ -27,7 +25,7 @@ var App = React.createClass({
       team: null,
       datasets: [],
       activePanel: false,
-      teamDatasetList: null,
+      filteredDatasets: null,
       submissionProgress: null,
       datasetAreaTabKey: 'add'
   	};
@@ -107,7 +105,7 @@ var App = React.createClass({
     this.appState.classPeriod = newClassPeriod;
     this.appState.save();
   	this.setState({classPeriod: newClassPeriod, activePanel: false});
-    this.updateTeamDatasetList();
+    this.updateFilteredDatasets();
   },
 
   handleClassPeriodAdd: function(addedClassPeriod) {
@@ -127,7 +125,7 @@ var App = React.createClass({
     this.appState.classPeriod = addedClassPeriod;
     this.appState.save();
     this.setState({classPeriod: addedClassPeriod, activePanel: false});
-    this.updateTeamDatasetList();
+    this.updateFilteredDatasets();
 
     // send this classperiod info to isense-key-maker, so the contributor key is ready
     // when we need it
@@ -148,21 +146,21 @@ var App = React.createClass({
     this.appState.team = newTeam;
     this.appState.save();
   	this.setState({team: newTeam, activePanel: false}, function(){
-      this.updateTeamDatasetList();
+      this.updateFilteredDatasets();
     }.bind(this));
   },
 
-  updateTeamDatasetList: function () {
-    if(this.appState.project == null || this.appState.classPeriod == null || this.state.team == null) {
+  updateFilteredDatasets: function () {
+    if (this.appState.project == null || this.appState.classPeriod == null || this.state.team == null) {
       return;
     }
 
     // put the list in an 'refeshing' state so views can show a waiting spinner
-    this.setState({teamDatasetList: 'refreshing'});
+    this.setState({filteredDatasets: 'refreshing'});
 
-    this.appState.project.getTeamDatasetList(this.appState.classPeriod, this.state.team,
-      function (datasetList) {
-        this.setState({teamDatasetList: datasetList});
+    this.appState.project.getFilteredDatasets(this.appState.classPeriod, this.state.team,
+      function (filteredDatasets) {
+        this.setState({filteredDatasets: filteredDatasets});
       }.bind(this));
   },
 
@@ -176,7 +174,7 @@ var App = React.createClass({
     // the app starts up.
     // in the interactive, this approach would be ok
     // newProject.load(this.projectLoadHandler);
-    this.updateTeamDatasetList();
+    this.updateFilteredDatasets();
   },
 
   handlePanelSelect: function(activeKey) {
@@ -200,7 +198,7 @@ var App = React.createClass({
 
      var projectHeader = [
        "Project: " + this.state.project.name
-     ]
+     ];
 
     // I tried enabling this when running as an interactive
     // but the panel header click handling prevented users from clicking on it
@@ -299,7 +297,7 @@ var App = React.createClass({
               classPeriod={this.state.classPeriod}
               team={this.state.team}
               submissionProgress={this.state.submissionProgress}
-              teamDatasetList={this.state.teamDatasetList}
+              filteredDatasets={this.state.filteredDatasets}
               onUploadDatasets={this.handleUploadDatasets}
               tabKey={this.state.datasetAreaTabKey}
               onSelect={this.handleDatasetTabSelect}/>
@@ -331,7 +329,7 @@ var App = React.createClass({
 
         // change to visualize tab if EMBEDDED and successful
         if(window.EMBEDDED && result != null){
-          this.setState({datasetAreaTabKey: 'visualize'});
+          this.setState({datasetAreaTabKey: 'visualizeTeam'});
         }
 
         // the dataset should be successfully uploaded
@@ -339,7 +337,7 @@ var App = React.createClass({
         dataset.save();
 
         // this should have added another one to the list
-        this.updateTeamDatasetList();
+        this.updateFilteredDatasets();
 
         // there should be a better way to do this so we only update the dataset that changed
         this.forceUpdate();
