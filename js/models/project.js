@@ -55,7 +55,7 @@ Project.prototype.load = function (callback){
 
 Project.prototype.isenseProjectLink = function(){
   return this.server + "/projects/" + this.id;
-}
+};
 
 Project.prototype.parseFields = function(){
   var project = this.isenseProject,
@@ -97,7 +97,7 @@ Project.prototype.parseFields = function(){
 
 Project.prototype.hasLocation = function() {
   return ('latitude' in this.fieldIDs) && ('longitude' in this.fieldIDs)
-}
+};
 
 Project.prototype.uploadData = function(uploadInfo, callback) {
  // uploadData({
@@ -153,63 +153,60 @@ Project.prototype.getDatasets = function(callback) {
 
   oReq.onerror = function () {
     callback(null);
-  }
+  };
 
   // pass the recru true so we download all of the datasets too
   oReq.open("get", this.server + "/api/v1/projects/" + this.id + "?recur=true", true);
   oReq.send();
 };
 
-Project.prototype.getTeamDatasetList = function(classPeriod, team, callback) {
-    // find all the datasets for this team
-    var matchingDataSets = [];
+Project.prototype.getFilteredDatasets = function(classPeriod, team, callback) {
+  var fieldIDs = this.fieldIDs;
+  var filteredDatasets = {
+    team: [],
+    class: [],
+    teacher: [],
+    state: []
+  };
 
-    var fieldIDs = this.fieldIDs;
+  function stateDataset(dataPoint) {
+    return dataPoint[fieldIDs.state] === classPeriod.state;
+  }
+  function teacherDataset(dataPoint) {
+    return stateDataset(dataPoint) && dataPoint[fieldIDs.teacherName] === classPeriod.teacherName;
+  }
+  function classDataset(dataPoint) {
+    return teacherDataset(dataPoint) && dataPoint[fieldIDs.className] === classPeriod.name;
+  }
+  function teamDataset(dataPoint) {
+    return classDataset(dataPoint) && dataPoint[fieldIDs.teamName] === team;
+  }
 
-    // taken from dataset.js
-    // dataSet[fieldIDs.teamName] = [this.team];
-    // dataSet[fieldIDs.className] = [this.classPeriod.name];
-    // dataSet[fieldIDs.teacherName] = [this.classPeriod.teacherName];
-    // dataSet[fieldIDs.state] = [this.classPeriod.state];
-
-    // need to make sure the team, and classPeriod are setup
-
-    // this assumes getDatasets returns the raw isense dataset objects
-    // need to improve this for filtering purposes:
-    // teacher name should probably be [state]-[teacher name]
-    // however if a teacher wants to filter by their own activities they could also use
-    // the contributor name filter at the beginning assuming they only have a max of 7
-    // classes this should be ok
-    this.getDatasets(function(dataSets) {
-      if(dataSets === null) {
-        callback(null);
-        return;
-      }
-
-      dataSets.forEach(function(dataSet){
-        var dataPoint = dataSet.data[0];
-        if(dataPoint[fieldIDs.teamName] === team &&
-           dataPoint[fieldIDs.className] === classPeriod.name &&
-           dataPoint[fieldIDs.teacherName] === classPeriod.teacherName &&
-           dataPoint[fieldIDs.state] === classPeriod.state){
-          matchingDataSets.push(dataSet);
-        }
-      });
-
-      if(matchingDataSets.length === 0){
-        callback(null);
-        return;
-      }
-
-      var dataSetList = matchingDataSets.map(function(dataSet){
-        return dataSet.id;
-      }).join(",");
-      console.log("dataSetList:" + dataSetList);
-
-      callback(dataSetList);
+  this.getDatasets(function (dataSets) {
+    if (dataSets === null) {
+      callback(null);
       return;
+    }
+
+    dataSets.forEach(function (dataSet) {
+      var dataPoint = dataSet.data[0];
+      if (teamDataset(dataPoint))    filteredDatasets.team.push(dataSet);
+      if (classDataset(dataPoint))   filteredDatasets.class.push(dataSet);
+      if (teacherDataset(dataPoint)) filteredDatasets.teacher.push(dataSet);
+      if (stateDataset(dataPoint))   filteredDatasets.state.push(dataSet);
     });
-  },
+
+    Object.keys(filteredDatasets).forEach(function (key) {
+      if (filteredDatasets[key].length === 0) {
+        filteredDatasets[key] = null;
+      } else {
+        filteredDatasets[key] = filteredDatasets[key].map(function (dataSet) { return dataSet.id; }).join(",");
+      }
+    });
+
+    callback(filteredDatasets);
+  });
+};
 
 Project.prototype.save = function() {
   if(window.EMBEDDED){
@@ -217,7 +214,7 @@ Project.prototype.save = function() {
   } else {
     StorageManager.save(this, "Project", this.isenseProjectLink());
   }
-}
+};
 
 Project.prototype.serialize = function(manager) {
   return {
@@ -226,12 +223,12 @@ Project.prototype.serialize = function(manager) {
     name: this.name,
     isenseProject: this.isenseProject
   }
-}
+};
 
 Project.deserialize = function(manager, data) {
   var project = new Project(data);
   project.parseFields();
   return project;
-}
+};
 
 module.exports = Project;
