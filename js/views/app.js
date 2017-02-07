@@ -155,13 +155,16 @@ var App = React.createClass({
       return;
     }
 
-    // put the list in an 'refeshing' state so views can show a waiting spinner
-    this.setState({filteredDatasets: 'refreshing'});
+    // disable the datasets so the interactive doesn't bog down the servers
+    this.setState({filteredDatasets: 'disabled'});
 
-    this.appState.project.getFilteredDatasets(this.appState.classPeriod, this.state.team,
-      function (filteredDatasets) {
-        this.setState({filteredDatasets: filteredDatasets});
-      }.bind(this));
+    // put the list in an 'refeshing' state so views can show a waiting spinner
+    // this.setState({filteredDatasets: 'refreshing'});
+
+    // this.appState.project.getFilteredDatasets(this.appState.classPeriod, this.state.team,
+    //   function (filteredDatasets) {
+    //     this.setState({filteredDatasets: filteredDatasets});
+    //   }.bind(this));
   },
 
   projectChangeHandler: function(newProject) {
@@ -350,11 +353,11 @@ var App = React.createClass({
     // doesn't provide feedback
 
     // save this new dataset to local storage. Ideally we'd use localStorage as the main location
-    // for these datasets. But that doesn't work well with react since it needs to use the 
+    // for these datasets. But that doesn't work well with react since it needs to use the
     // set state.  So localStorage is going to have to be be a copy, and then when a dataset is
     // updated we need to update localStorage too.  We could let the DataSet class work with its
     // local storage object, but I we need to assume that localStorage requires calling 'set'
-    // inorder to update. So if we are storing more than this list of datasets we should put the 
+    // inorder to update. So if we are storing more than this list of datasets we should put the
     // datasets in their own key and update this whole key each time a new one is added
     // then when the app loads we 'rehydrate'  the dataset objects from localStorage
     // the dataset can save a pointer to its project this way when it is rehydrated that can
