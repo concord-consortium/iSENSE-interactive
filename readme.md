@@ -18,5 +18,6 @@ This approach will not work well when we have a hundred classes with 10 groups i
 
 ### Developing
 
+- `npm install` - install the node.js packages
 - `npm start` - this will watch for changes and rebuild bundle.js
 - `python -m SimpleHTTPServer` - serve up files on localhost:8000
