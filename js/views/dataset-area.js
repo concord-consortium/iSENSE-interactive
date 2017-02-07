@@ -34,10 +34,6 @@ var DatasetArea = React.createClass({
   },
 
   getDatasetList: function (type) {
-    if (this.props.filteredDatasets === 'disabled') {
-      // Special case, datasets are disabled. DatasetVisualization handles this value too.
-      return 'disabled';
-    }
     if (this.props.filteredDatasets === 'refreshing') {
       // Special case, datasets are refreshing. DatasetVisualization handles this value too.
       return 'refreshing';

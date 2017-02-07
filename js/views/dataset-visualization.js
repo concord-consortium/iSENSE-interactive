@@ -30,11 +30,6 @@ var DatasetVisualization = React.createClass({
 
     if (this.props.datasetList === null) {
       return <div> There is no data.</div>;
-    } else if (this.props.datasetList === 'disabled') {
-      return <div>Visualization is temporarily disabled. We are sorry for the inconvience.
-      Any data you have submit will be saved. If necessary, you can visit iSENSE directly
-      to view the data.
-      Expand the Project bar above, and click 'Open Full iSENSE Project'.</div>;
     } else if (this.props.datasetList === 'refreshing') {
       return <div>Visualization is updating...</div>;
     } else {
