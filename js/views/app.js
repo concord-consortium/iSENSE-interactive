@@ -156,15 +156,15 @@ var App = React.createClass({
     }
 
     // disable the datasets so the interactive doesn't bog down the servers
-    this.setState({filteredDatasets: 'disabled'});
+    // this.setState({filteredDatasets: 'disabled'});
 
     // put the list in an 'refeshing' state so views can show a waiting spinner
-    // this.setState({filteredDatasets: 'refreshing'});
+    this.setState({filteredDatasets: 'refreshing'});
 
-    // this.appState.project.getFilteredDatasets(this.appState.classPeriod, this.state.team,
-    //   function (filteredDatasets) {
-    //     this.setState({filteredDatasets: filteredDatasets});
-    //   }.bind(this));
+    this.appState.project.getFilteredDatasets(this.appState.classPeriod, this.state.team,
+      function (filteredDatasets) {
+        this.setState({filteredDatasets: filteredDatasets});
+      }.bind(this));
   },
 
   projectChangeHandler: function(newProject) {
