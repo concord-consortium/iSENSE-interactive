@@ -29,8 +29,20 @@ const VIS_TABS = {
 };
 
 var DatasetArea = React.createClass({
+  getInitialState: function() {
+    return {
+      openedTabs: {}
+    };
+  },
+  
   handleTabSelect: function (key) {
     this.props.onSelect(key);
+    // I'd like to set a property on the DatasetVisualization view
+    // so it knows it has been selected for the first time I think
+    // the only way to do that is to set some state on ourselves
+    // which is passed down to the DatsetVisualization
+    this.state.openedTabs[key] = true;
+    this.setState({openedTabs: this.state.openedTabs});
   },
 
   getDatasetList: function (type) {
@@ -58,7 +70,8 @@ var DatasetArea = React.createClass({
           datasetList={this.getDatasetList(type)}
           project={this.props.project}
           classPeriod={this.props.classPeriod}
-          team={this.props.team}/>
+          team={this.props.team}
+          opened={this.state.openedTabs[tabInfo.eventKey]}/>
       </TabPane>
     );
   },

@@ -37,6 +37,9 @@ var DatasetVisualization = React.createClass({
       Expand the Project bar above, and click 'Open Full iSENSE Project'.</div>;
     } else if (this.props.datasetList === 'refreshing') {
       return <div>Visualization is updating...</div>;
+    } else if (!this.props.opened) {
+      // the user hasn't opened the tab yet so don't load the iframe
+      return <div>Visualization is loading...</div>;
     } else {
       var url = getURL(this.props.project.server, this.props.project.id, this.props.datasetList);
       var truncated = false;
